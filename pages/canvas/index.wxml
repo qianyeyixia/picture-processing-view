@@ -1,0 +1,7 @@
+<!--pages/canvas/index.wxml-->
+<view>
+    <image-cropper id="image-cropper" limit_move="{{limit_move}}" disable_rotate="{{true}}"
+        width="{{width}}" height="{{height}}" imgSrc="{{imgSrc}}" bindload="cropperload" bindimageload="loadimage"
+        bindtapcut="clickcut">
+    </image-cropper>
+</view>

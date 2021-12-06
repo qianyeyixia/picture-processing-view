@@ -4,18 +4,36 @@ const app = getApp()
 
 Page({
   data: {
-    motto: 'Hello World',
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     canIUseGetUserProfile: false,
-    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName') // 如需尝试获取用户信息可改为false
-  },
-  // 事件处理函数
-  bindViewTap() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
+    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName'), // 如需尝试获取用户信息可改为false
+    navListArr:[
+      {
+        title: "图片认证",
+        isToMiniApp: !1,
+        text: "点击图片认证,就可以上传裁剪移动缩放等等",
+        url: "../canvas/index"
+      },
+      {
+        title: "头像DIY",
+        isToMiniApp: !1,
+        text: "个性化美化头像哦~多种饰品供选择~",
+        url: "../iconAvatar/iconAvatar"
+      }, {
+        title: "照片拼相框",
+        avatar: "../../images/frame/frame5.png",
+        isToMiniApp: !1,
+        text: "美美的你和美美的相框更配哦~",
+        url: "../splicePhoto/splicePhoto"
+    }, {
+        title: "给我个国旗",
+        avatar: "../../images/flag.png",
+        isToMiniApp: !1,
+        text: "头像加国旗~",
+        url: "../bgAvatar/bgAvatar"
+    }]
   },
   onLoad() {
     if (wx.getUserProfile) {
@@ -44,5 +62,18 @@ Page({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
     })
+  },
+  toCropper() {
+    wx.navigateTo({
+      url: `../canvas/index`
+    })
+  },
+  navItemClick(e) {
+    console.log(e)
+    let item = e.currentTarget.dataset.item;
+    wx.navigateTo({
+      url: item.url,
+    })
   }
+
 })

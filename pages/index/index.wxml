@@ -1,23 +1,19 @@
 <!--index.wxml-->
-<view class="container">
-  <view class="userinfo">
-    <block wx:if="{{canIUseOpenData}}">
-      <view class="userinfo-avatar" bindtap="bindViewTap">
-        <open-data type="userAvatarUrl"></open-data>
-      </view>
-      <open-data type="userNickName"></open-data>
-    </block>
-    <block wx:elif="{{!hasUserInfo}}">
-      <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
-      <button wx:elif="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-      <view wx:else> 请使用1.4.4及以上版本基础库 </view>
-    </block>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
+<view>
+  <view class='margin-top'></view>
+  <view class="cu-bar cu-bar-my data-v-d4d9d1f0">
+    <view class="action sub-title data-v-d4d9d1f0">
+      <text class="text-xl text-bold text-pure data-v-d4d9d1f0">头像美化</text>
+      <text class="bg-pure data-v-d4d9d1f0" style="width:2rem;"></text>
+    </view>
   </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
+
+  <view class="avatar-wrap">
+    <view bindtap="navItemClick" class="avatar-item" data-item="{{item}}" wx:for="{{navListArr}}" wx:key="index">
+      <view class="avatar-content">
+        <view class="avatar-title">{{item.title}}</view>
+        <view class="avatar-text">{{item.text}}</view>
+      </view>
+    </view>
   </view>
 </view>

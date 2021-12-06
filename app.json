@@ -1,8 +1,8 @@
 {
     "pages": [
-        "pages/photo/photo",
         "pages/index/index",
-        "pages/logs/logs"
+        "pages/canvas/index",
+        "pages/photo/photo"
     ],
     "window": {
         "backgroundTextStyle": "light",

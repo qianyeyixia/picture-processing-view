@@ -1,10 +1,30 @@
-/**app.wxss**/
+@import "./common/ColorUi.wxss";
+
+page {
+  height: 100%;
+  font-family: PingFangSC-Semibold, Helvetica, sans-serif;
+  font-weight: 100； font-weight：normal;
+  font-stretch: normal;
+  text-align: left;
+  color: #4a4a4a;
+  background-color: #f6f8ff;
+  font-size: 12px;
+}
+
 .container {
   height: 100%;
+  overflow: hidden;
+}
+
+.flex {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  padding: 200rpx 0;
-  box-sizing: border-box;
-} 
+}
+
+.both-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
