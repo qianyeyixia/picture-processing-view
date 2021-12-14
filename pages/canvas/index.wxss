@@ -1,1 +1,13 @@
 /* pages/canvas/index.wxss */
+.header {
+	margin-top: 40rpx;
+	display: flex;
+	justify-content: center;
+}
+.upload_img {
+	width: 230rpx;
+	height: 280rpx;
+	border: 1rpx solid #f333f3;
+	display: flex;
+	border-radius: 10rpx;
+}
