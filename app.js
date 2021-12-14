@@ -15,6 +15,7 @@ App({
   },
   globalData: {
     userInfo: null,
-    baseUrl: "http://www.shazhibin.top/service"
+    baseUrl: "http://www.shazhibin.top/service",
+    imgaeSrc:undefined,
   }
 })
