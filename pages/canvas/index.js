@@ -8,8 +8,8 @@ Page({
         ctx: null,
         canvas: null,
         imgSrc: null, 
-        width:150,//宽度
-        height:150,//高度
+        width:250,//宽度
+        height:250,//高度
         limit_move:false,
         show_cropper:false
     },
@@ -19,12 +19,10 @@ Page({
     onLoad: function (options) {
         this.cropper = this.selectComponent("#image-cropper");
     },
-
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
     onReady: function () {
-        console.log(app)
         if(!app.globalData.userInfo) {
             wx.login({
                 timeout: 5000,
@@ -45,25 +43,6 @@ Page({
             })
         }
     },
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow: function () { },
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide: function () {},
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload: function () {},
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh: function () {},
-    /**
-     * 页面上拉触底事件的处理函数
-     */
     onReachBottom: function () {},
     chooseImage: function () {
         let _this = this;

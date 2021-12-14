@@ -2,5 +2,6 @@
   "usingComponents": {
     "image-cropper": "../../component/image-cropper/image-cropper"
   },
-  "disableScroll": true
+  "disableScroll": true,
+  "navigationBarTitleText": "图片认证"
 }
