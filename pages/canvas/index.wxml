@@ -8,8 +8,8 @@
             <block wx:else>上传图片</block>
         </view>
     </view>
-    <view>
+    <view class="">
         <button class="cu-btn" bindtap="toCropper">前往cropper页面</button>
-        <button class="cu-btn">照片拼相框</button>
+        <button class="cu-btn" bindtap="toSlice">照片拼相框</button>
     </view>
 </view>

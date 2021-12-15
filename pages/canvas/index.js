@@ -117,5 +117,17 @@ Page({
     wx.navigateTo({
       url: `cropper?imgSrc=${this.data.imgSrc}`,
     })
+  },
+  toSlice() {
+    wx.navigateTo({
+      url: `../slicePhoto/slicePhoto?imgSrc=${this.data.imgSrc}`,
+    })
+  },
+  isSrcEmpty() {
+    if(!this.data.imgSrc) {
+      wx.showToast({
+        title: "没有上传图片,不能切换"
+      })
+    }
   }
 });

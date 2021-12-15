@@ -1,0 +1,7 @@
+<!--pages/slicePhoto/slicePhoto.wxml-->
+<view class="splice-page">
+    <canvas canvasId="tempCanvas" style="width:750rpx;height:{{totalHeight}}px;position:absolute;left:-999999px"></canvas>
+    <view bindtap="saveImgToPhone" class="saveButton" wx:if="{{readuSave}}">
+        <text class="icon-save"></text>
+    </view>
+</view>
