@@ -528,16 +528,6 @@ Component({
         _initCanvas() {
             //初始化canvas
             if (!this.data.ctx) {
-                // const query = wx.createSelectorQuery()
-                // query.select("#image-cropper")
-                // .fields({
-                //     node:true,
-                //     size:true
-                // })
-                // .exec(res => {
-                //     const canvas = res[0].node
-                //     this.data.ctx = canvas.getContext('2d')
-                // })
                 this.data.ctx = wx.createCanvasContext("image-cropper", this);
             }
         },

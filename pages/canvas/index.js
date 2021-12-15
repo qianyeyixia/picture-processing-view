@@ -5,8 +5,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    ctx: null,
-    canvas: null,
     imgSrc: null,
     width: 150, //宽度
     height: 150, //高度
@@ -17,9 +15,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    console.log("onload", options, app.globalData)
     this.cropper = this.selectComponent("#image-cropper");
+    if (app.globalData.imgSrc) {
+      this.setData({
+        imgSrc: app.globalData.imgSrc
+      })
+    }
   },
-
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
@@ -45,7 +48,17 @@ Page({
       });
     }
   },
-
+  onShow() {
+    console.log("show" , app.globalData.imgSrc)
+    if (app.globalData.imgSrc) {
+      this.setData({
+        imgSrc: app.globalData.imgSrc
+      })
+    }
+  },
+  onHide() {
+    console.log("onhide")
+  },
   chooseImage: function () {
     let _this = this;
     wx.chooseImage({
@@ -86,7 +99,10 @@ Page({
     });
   },
   drawImage: function (id, imageSrc, width, height, color = "wdhite") {
-    const { ctx, canvas } = this.data;
+    const {
+      ctx,
+      canvas
+    } = this.data;
     let img = canvas.createImage();
     img.id = id;
     img.src = imageSrc;
@@ -99,7 +115,7 @@ Page({
   },
   toCropper() {
     wx.navigateTo({
-      url: `./cropper?imgSrc=${this.data.imgaeSrc}`,
+      url: `cropper?imgSrc=${this.data.imgSrc}`,
     })
   }
 });

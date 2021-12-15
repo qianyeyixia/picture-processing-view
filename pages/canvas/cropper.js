@@ -2,7 +2,6 @@
 
 const app = getApp()
 Page({
-
 	/**
 	 * 页面的初始数据
 	 */
@@ -20,11 +19,12 @@ Page({
 	 * 生命周期函数--监听页面加载
 	 */
 	onLoad: function (options) {
+		console.log("options", options, !options.imgSrc)
 		this.cropper = this.selectComponent("#image-cropper");
 		this.setData({
-			imgSrc: app.globalData.imgaeSrc
+			imgSrc: options.imgSrc
 		})
-		if (!options.imgSrc) {
+		if (!options.imgSrc || options.imgSrc === "undefined") {
 			this.cropper.upload(); //上传图片
 		}
 	},
@@ -154,6 +154,7 @@ Page({
 	},
 	submit() {
 		this.cropper.getImg((obj) => {
+			console.log("obje", obj)
 			app.globalData.imgSrc = obj.url;
 			wx.navigateBack({
 				delta: -1
