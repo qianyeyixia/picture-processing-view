@@ -71,7 +71,7 @@ Page({
             let device = app.globalData.myDevice;
             let deviceRatio = device.windowWidth / 750
             this.setData({
-                device:device,
+                device: device,
                 deviceRatio: deviceRatio,
                 page: "photoFrame",
                 longImageSrcs: [],
@@ -155,48 +155,57 @@ Page({
         const t = this;
         const i = wx.createCanvasContext("tempCanvas", t);
         wx.getImageInfo({
-            src:t.data.frameSrc
+            src: t.data.frameSrc
         }).then(res => {
-            console.log("外边框",res);
+            console.log("外边框", res);
             // i.drawImage(t.data.frameSrc, 0, 0 ,res.width,res.height)
-            i.drawImage(res.path, 0, 0 ,res.width,res.height)
+            t.setData({
+                totalHeight: res.height,
+            })
+            i.drawImage(res.path, 0, 0, res.width, res.height)
             wx.getImageInfo({
-              src: t.data.imgSrc,
+                src: t.data.imgSrc,
             }).then(_res => {
                 console.log("头像大小", _res)
-                let sx = res.width/ 2 - _res.width/2
-                let sy = res.height/ 2 - _res.height/2
+                let sx = res.width / 2 - _res.width / 2
+                let sy = res.height / 2 - _res.height / 2
                 // i.drawImage(t.data.imgSrc, sx, sy , res.width /2,res.height /2)
-                i.drawImage(_res.path, sx, sy , res.width /2,res.height /2)
-                i.draw(true, () => {
-                    console.log("绘制完成");
-                })
+                i.drawImage(_res.path, sx, sy, _res.width / 2, _res.height / 2)
+                i.draw()
                 setTimeout(() => {
-                    wx.canvasToTempFilePath({
-                        canvasId: "tempCanvas"
-                    }).then(_res_ => {
-                        console.log("函数 then", _res_)
+                    t.getTemFile().then((_c) => {
                         wx.saveImageToPhotosAlbum({
-                            filePath:_res_.tempFilePath
+                            filePath: _res_.tempFilePath
                         }).then(saveRes => {
-                            console.log(" saveImageToPhotosAlbum函数 then", _res_)
+                            console.log(" saveImageToPhotosAlbum函数 then", saveRes)
                             wx.showModal({
                                 title: '温馨提示',
                                 content: '图片保存成功，可在相册中查看',
                                 showCancel: false,
                                 success(cc) {
-                                  wx.clear
+                                    wx.clear
                                 }
-                              })
+                            })
                         })
-                    }).catch(e => {
-                        console.log("错误",e);
                     })
-                }, 1500)
+                }, 1599)
             })
-
-
         })
-       
+    },
+    getTemFile() {
+        let t = this
+        return new Promise((resolve, reject) => {
+            wx.canvasToTempFilePath({
+                canvasId: "tempCanvas",
+            }).then(res => {
+                resolve(res)
+            }).catch(err => {
+                reject(err)
+                console.log(resject)
+                t.getTemFile()
+            })
+        })
+
+
     }
 })

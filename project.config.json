@@ -39,8 +39,8 @@
         "showES6CompileOption": false
     },
     "compileType": "miniprogram",
-    "libVersion": "2.19.3",
-    "appid": "wxfd60f98a21eea9ba",
+    "libVersion": "2.21.1",
+    "appid": "wx57366fd7009e5fe5",
     "projectname": "picture-processing",
     "debugOptions": {
         "hidedInDevtools": []
