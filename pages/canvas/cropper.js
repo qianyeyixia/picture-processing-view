@@ -6,7 +6,7 @@ Page({
 	 * 页面的初始数据
 	 */
 	data: {
-		imgSrc: null,
+		imgSrc: "../../images/frame/frame11.png",
 		width: 250, //宽度
 		height: 250, //高度
 		max_width: 300,
@@ -18,14 +18,15 @@ Page({
 	/**
 	 * 生命周期函数--监听页面加载
 	 */
-	onLoad: function (options) {
-		console.log("options", options, !options.imgSrc)
+	onLoad: function (c) {
 		this.cropper = this.selectComponent("#image-cropper");
-		this.setData({
-			imgSrc: options.imgSrc
-		})
-		if (!options.imgSrc || options.imgSrc === "undefined") {
+		console.log(c, !!c.imgSrc)
+		if (c.imgSrc === "null" || c.imgSrc === "undefined") {
 			this.cropper.upload(); //上传图片
+		} else {
+			this.setData({
+				imgSrc: c.imgSrc
+			})
 		}
 	},
 	clickcut(e) {

@@ -28,10 +28,11 @@ Page({
    */
   onReady: function () {
     console.log("app", app);
-    if (!app.globalData.userInfo || app.globalData.userInfo == {}) {
+    if (!app.globalData.userInfo) {
       wx.login({
         timeout: 5000,
       }).then((res) => {
+        console.log("wx.login", res)
         wx.request({
           url: `${app.globalData.baseUrl}/wx/login`,
           data: {
@@ -45,7 +46,9 @@ Page({
             console.log(app.globalData);
           },
         });
-      });
+      }).error(e => {
+        console.error();
+      })
     }
   },
   onShow() {

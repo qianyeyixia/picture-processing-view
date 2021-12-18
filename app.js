@@ -2,10 +2,7 @@
 App({
   onLaunch() {
     // 展示本地存储能力
-    const logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs)
-
+    this.initGlobalData()
     // 登录
     wx.login({
       success: res => {
@@ -13,9 +10,15 @@ App({
       }
     })
   },
+  initGlobalData() {
+    this.globalData = {
+      userInfo: null,
+      baseUrl: "http://www.shazhibin.top/service",
+      imgaeSrc: undefined,
+      myDevice: wx.getSystemInfoSync()
+    }
+  },
   globalData: {
-    userInfo: null,
-    baseUrl: "http://www.shazhibin.top/service",
-    imgaeSrc:undefined,
+   
   }
 })
