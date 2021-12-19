@@ -1,8 +1,8 @@
 {
     "pages": [
         "pages/slicePhoto/slicePhoto",
-        "pages/canvas/index",
         "pages/index/index",
+        "pages/canvas/index",
         "pages/photo/photo",
         "pages/canvas/cropper"
     ],

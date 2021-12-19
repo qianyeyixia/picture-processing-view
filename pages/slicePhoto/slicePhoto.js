@@ -2,14 +2,18 @@
 const app = getApp();
 var cImg = require("../../utils/chooseImage");
 var getUser = require("../../utils/login")
+var getPhoteFrameList = require("../../utils/getPhoteFrame")
 Page({
     /**
      * 页面的初始数据
      */
     data: {
+        deviceRatio: 1,
         readuSave: true,
-        imgSrc: "../../images/frame/frame2.png",
+        imgSrc: "",
         frameSrc: "",
+        frameHeight: 0,
+        frameWidth: 0,
         isFrameChoose: !1,
         photoSrc: "",
         frameHeight: 0,
@@ -56,6 +60,8 @@ Page({
         }],
         device: null,
         totalHeight: 0,
+        totalWidth: 15,
+        frame_path: "http://www.shazhibin.top/frame_path"
     },
 
     /**
@@ -69,7 +75,8 @@ Page({
         }
         if (app.globalData.myDevice) {
             let device = app.globalData.myDevice;
-            let deviceRatio = device.windowWidth / 750
+            console.log("device", device);
+            let deviceRatio = Math.round(device.windowWidth / 750)
             this.setData({
                 device: device,
                 deviceRatio: deviceRatio,
@@ -78,14 +85,22 @@ Page({
                 imgViewHeight: device.windowHeight - 160 * deviceRatio
             })
         }
+        getPhoteFrameList(this, app).then(res => {
+            console.log(res);
+            const {
+                data
+            } = res
+            this.setData({
+                frame_path: data.result,
+                frameSrcs: data.resultList
+            })
+        })
     },
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
     onReady: function () {
-        if (!app.globalData.userInf) {
-            getUser.getUserInfo(app)
-        }
+        console.log(app.globalData);
     },
 
     /**
@@ -136,48 +151,76 @@ Page({
         console.log(e)
         let t = this;
         wx.getImageInfo({
-            src: "../../images/frame/" + e.currentTarget.dataset.src,
+            src: e.currentTarget.dataset.src,
             success: function (a) {
-                var i = a.width / (750 * e.deviceRatio);
-                e.frameWidth = a.width / i, t.frameHeight = a.height / i, t.setData({
-                    frameHeight: e.frameHeight,
+                console.log("a", a, t.data.deviceRatio);
+                var i = a.width / (750 * t.data.deviceRatio);
+                console.log("i", i);
+                t.setData({
+                    frameWidth: a.width / i,
+                    frameHeight: a.height / i,
                     isFrameChoose: !1,
-                    frameSrc: "../../images/frame/" + e.currentTarget.dataset.src,
+                    frameSrc: e.currentTarget.dataset.src,
                     readuSave: !0
                 });
             }
         });
     },
     chooseImags() {
-        cImg.chooseImg(this, app)
+        let t = this;
+        cImg.chooseImg(this, app, res => {
+            console.log("then", res);
+            const prmises = async () => {
+                console.log("prmises 函数触发");
+                const imgaeSrcInfo = await wx.getImageInfo({
+                    src: res.result.picturePath
+                })
+                const frameInfo = await wx.getImageInfo({
+                    src: this.data.frameSrc,
+                })
+                console.log("imgaeSrcInfo", imgaeSrcInfo);
+                console.log("frameInfo", frameInfo);
+                t.setData({
+                    imgSrc: res.result.picturePath,
+                    photoWidth: imgaeSrcInfo.width / t.data.device.devicePixelRatio,
+                    photoHeight: imgaeSrcInfo.height / t.data.device.devicePixelRatio
+                })
+            }
+            prmises()
+        })
     },
     saveImgToPhone() {
         const t = this;
         const i = wx.createCanvasContext("tempCanvas", t);
+        wx.showLoading({
+            title: '生成图片中',
+        })
         wx.getImageInfo({
             src: t.data.frameSrc
         }).then(res => {
             console.log("外边框", res);
             // i.drawImage(t.data.frameSrc, 0, 0 ,res.width,res.height)
             t.setData({
-                totalHeight: res.height,
+                totalHeight: res.height + 40,
+                totalWidth: res.width + 40,
             })
             i.drawImage(res.path, 0, 0, res.width, res.height)
             wx.getImageInfo({
                 src: t.data.imgSrc,
             }).then(_res => {
                 console.log("头像大小", _res)
-                let sx = res.width / 2 - _res.width / 2
-                let sy = res.height / 2 - _res.height / 2
-                // i.drawImage(t.data.imgSrc, sx, sy , res.width /2,res.height /2)
-                i.drawImage(_res.path, sx, sy, _res.width / 2, _res.height / 2)
+                const _width = res.width;
+                const _height = Math.round(_width * res.width / res.height)
+                i.drawImage(_res.path, 0, 0, _width - 20, _height - 20)
                 i.draw()
                 setTimeout(() => {
                     t.getTemFile().then((_c) => {
+                        console.log("getTemFile", _c);
                         wx.saveImageToPhotosAlbum({
-                            filePath: _res_.tempFilePath
+                            filePath: _c.tempFilePath
                         }).then(saveRes => {
                             console.log(" saveImageToPhotosAlbum函数 then", saveRes)
+                            wx.hideLoading()
                             wx.showModal({
                                 title: '温馨提示',
                                 content: '图片保存成功，可在相册中查看',
@@ -201,11 +244,8 @@ Page({
                 resolve(res)
             }).catch(err => {
                 reject(err)
-                console.log(resject)
                 t.getTemFile()
             })
         })
-
-
     }
 })

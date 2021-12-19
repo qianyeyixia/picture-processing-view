@@ -10,11 +10,15 @@ App({
       }
     })
   },
-  initGlobalData() {
+  async initGlobalData() {
+    const userInfoData = await wx.getStorage({key:"userInfo"}) 
+    console.log("userInfoData", userInfoData);
+    const hasUserInfo = userInfoData.data.openId ? true : false
     this.globalData = {
-      userInfo: null,
+      userInfo: userInfoData.data || null,
       baseUrl: "http://www.shazhibin.top/service",
       imgaeSrc: undefined,
+      hasUserInfo,
       myDevice: wx.getSystemInfoSync()
     }
   },
