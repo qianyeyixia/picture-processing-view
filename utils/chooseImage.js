@@ -7,7 +7,7 @@ function wxChooseImage(el, app, uploadSuccess) {
             sourceType: ["album", "camera"],
         }).then(res => {
             wx.showLoading({
-                title: "上传中,请耐心等待~~"
+                title: "上传中~~"
             })
             console.log("wx.chooseImage success", res);
             const uploadTask = wx.uploadFile({
