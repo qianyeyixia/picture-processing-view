@@ -69,7 +69,6 @@ Page({
     })
   },
   navItemClick(e) {
-    console.log(e)
     let item = e.currentTarget.dataset.item;
     wx.navigateTo({
       url: item.url,

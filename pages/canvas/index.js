@@ -18,6 +18,21 @@ Page({
    */
   onLoad: function (options) {
     this.cropper = this.selectComponent("#image-cropper");
+    const query = wx.createSelectorQuery();
+    query
+      .select("#testCanvas")
+      .fields({node:true, size:true})
+      .exec(res => {
+        console.log(res)
+        const ctx = res[0].node;
+        const canvas = ctx.getContext("2d")
+        canvas.setFillStyle('red')
+        canvas.fillRect(10, 10, 150, 100)
+        canvas.draw()
+        canvas.fillRect(50, 50, 150, 100)
+        canvas.draw(true) 
+      })
+   
   },
 
   /**
@@ -48,6 +63,7 @@ Page({
 
   chooseImage: function () {
     let _this = this;
+    wx.showLoading()
     wx.chooseImage({
       count: 1,
       sizeType: ["original", "compressed"],
@@ -62,40 +78,30 @@ Page({
           openId: app.globalData.userInfo.openId,
         },
         success: (fileRes) => {
-          console.log("success", fileRes);
+          console.log("success", fileRes, JSON.parse(fileRes.data));
           let _data = JSON.parse(fileRes.data);
+          const _base64Str = `data:image/png:base64,${_data.result}`
+          const _befferURL = wx.createBufferURL(wx.base64ToArrayBuffer(_base64Str))
+          console.log("_befferURL",_befferURL)
           _this.setData({
-            imgSrc: `data:image/png;base64,${_data.result}`,
+            imgSrc:_befferURL
           });
-          app.globalData.imgaeSrc = _this.data.imgSrc
+          app.globalData.imgaeSrc = _befferURL
         },
         fail: (res) => {
           console.log("fail res", res);
+          wx.hideLoading()
         },
       });
       uploadTask.onProgressUpdate((res) => {
         console.log("上传进度", res.progress);
         if (res.progress == 100) {
-          // wx.navigateTo({
-          //   url: './cropper',
-          // })
+          wx.hideLoading()
         }
         console.log("已经上传的数据长度", res.totalBytesSent);
         console.log("预期需要上传的数据总长度", res.totalBytesExpectedToSend);
       });
     });
-  },
-  drawImage: function (id, imageSrc, width, height, color = "wdhite") {
-    const { ctx, canvas } = this.data;
-    let img = canvas.createImage();
-    img.id = id;
-    img.src = imageSrc;
-    img.width = width;
-    img.height = height;
-    img.onload = function () {
-      console.log("图片加载完成");
-      ctx.drawImage(img, 0, 0, width, height);
-    };
   },
   toCropper() {
     wx.navigateTo({

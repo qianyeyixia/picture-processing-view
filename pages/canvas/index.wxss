@@ -10,4 +10,6 @@
 	border: 1rpx solid #f333f3;
 	display: flex;
 	border-radius: 10rpx;
+	justify-content: center;
+	align-items: center;
 }

@@ -9,7 +9,8 @@
     <!-- <switch checked='{{disable_width?true:false}}' bindchange="switchChangeDisableWidth" /> -->
     <!-- <text style='color:white;margin-right:5rpx;'>锁定裁剪框高</text> -->
     <!-- <switch checked='{{disable_height?true:false}}' bindchange="switchChangeDisableHeight" /> -->
-    <button class="cu-btn" size="mini"  bindtap='submit'>确定</button>
+    <button class="cu-btn" size="mini" bindtap='submit'>确定</button>
+    <!-- <button class="cu-btn" size="mini" bindtap='clickcut'>裁剪</button> -->
     <!-- <text style='color:white;margin-right:5rpx;'>锁定比例</text> -->
     <!-- <switch checked='{{disable_ratio?true:false}}' bindchange="switchChangeDisableRatio" /> -->
     <!-- <text style='color:white;margin-right:5rpx;'>锁定旋转</text> -->
@@ -17,13 +18,13 @@
     <!-- <text style='color:white;margin-right:5rpx;'>限制移动</text> -->
     <!-- <switch checked='{{limit_move?true:false}}' bindchange="switchChangeLimitMove" /> -->
     <button class="cu-btn" size="mini" catchtouchstart='top' catchtouchend='end' data-type="top">上</button>
-    <button class="cu-btn"  size="mini"  catchtouchstart='bottom' catchtouchend='end' data-type="bottom">下</button>
-    <button class="cu-btn"  size="mini"  catchtouchstart='left' catchtouchend='end' data-type="left">左</button>
-    <button class="cu-btn"  size="mini"  catchtouchstart='right' catchtouchend='end' data-type="right">右</button>
-    <button class="cu-btn"  size="mini"  catchtouchstart='enlarge' catchtouchend='end' data-type="enlarge">
+    <button class="cu-btn" size="mini" catchtouchstart='bottom' catchtouchend='end' data-type="bottom">下</button>
+    <button class="cu-btn" size="mini" catchtouchstart='left' catchtouchend='end' data-type="left">左</button>
+    <button class="cu-btn" size="mini" catchtouchstart='right' catchtouchend='end' data-type="right">右</button>
+    <button class="cu-btn" size="mini" catchtouchstart='enlarge' catchtouchend='end' data-type="enlarge">
         <text class="cuIcon-add lg"></text>
     </button>
-    <button class="cu-btn"  size="mini"  catchtouchstart='narrow' catchtouchend='end' data-type="narrow">缩小</button>
-    <button class="cu-btn"   size="mini"  catchtouchstart='rotate' catchtouchend='end' data-type="rotate">旋转</button>
-    <button class="cu-btn"  size="mini"  catchtap='upload'>上传</button>
+    <button class="cu-btn" size="mini" catchtouchstart='narrow' catchtouchend='end' data-type="narrow">缩小</button>
+    <button class="cu-btn" size="mini" catchtouchstart='rotate' catchtouchend='end' data-type="rotate">旋转</button>
+    <button class="cu-btn" size="mini" catchtap='upload'>上传</button>
 </view>

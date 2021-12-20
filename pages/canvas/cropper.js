@@ -21,12 +21,16 @@ Page({
 	 */
 	onLoad: function (options) {
 		this.cropper = this.selectComponent("#image-cropper");
-		this.setData({
-			imgSrc: app.globalData.imgaeSrc
-		})
 		if (!options.imgSrc) {
 			this.cropper.upload(); //上传图片
 		}
+		if(app.globalData.imgSrc) {
+			this.setData({
+				imgSrc: app.globalData.imgaeSrc
+			})
+		}
+
+	
 	},
 	clickcut(e) {
 		console.log(e.detail);
@@ -66,7 +70,8 @@ Page({
 						that.setData({
 							imgSrc: `data:image/png;base64,${_data.result}`,
 						});
-						app.globalData.imgaeSrc = that.data.imgSrc
+						app.globalData.imgaeSrc.orgin = that.data.imgSrc
+						app.globalData.imgaeSrc.BufferURL = wx.createBufferURL(wx.base64ToArrayBuffer(_data.result))
 					},
 					fail: (res) => {
 						console.log("fail res", res);
@@ -153,10 +158,12 @@ Page({
 		});
 	},
 	submit() {
+		console.log("submit")
 		this.cropper.getImg((obj) => {
+			console.log("submit obj", obj)
 			app.globalData.imgSrc = obj.url;
-			wx.navigateBack({
-				delta: -1
+			wx.navigateTo({
+			  url: `../canvas/index?imgSrc=${obj.url}`,
 			})
 		});
 	},
@@ -209,4 +216,7 @@ Page({
 	end(e) {
 		clearInterval(this.data[e.currentTarget.dataset.type]);
 	},
+	clickcut(e) {
+		console.log(e.detail);
+	}
 })
