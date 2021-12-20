@@ -1,25 +1,34 @@
-function getUserInfo(app) {
-    wx.login({
-        timeout: 5000,
-      }).then((res) => {
-        wx.request({
-          url: `${app.globalData.baseUrl}/wx/login`,
-          data: {
-            code: res.code,
-          },
-          success: (res) => {
-            console.log(res);
-            app.globalData.userInfo = {
-              ...res.data.result,
-            };
-            console.log(app.globalData);
-          },
-        });
-      }).catch(e => {
-        console.error("错误`", e);
-      })
-}
+async function getUserInfo(app) {
+  const res = await wx.login({
+    timeout: 5000,
+  });
+  console.log("wx.login", res);
 
-module.exports = {
-    getUserInfo
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${app.globalData.baseUrl}/wx/login`,
+      data: {
+        code: res.code,
+      },
+      success: (_res) => {
+        app.globalData.userInfo = {
+          ...app.globalData.userInfo,
+          ..._res.data.result,
+        };
+        wx.setStorage({
+          key: "userInfo",
+          data: app.globalData.userInfo
+        })
+
+        resolve(_res)
+      },
+      error: (error) => {
+        console.log("getUserInfo error")
+        reject(error)
+      }
+    });
+  })
 }
+module.exports = {
+  getUserInfo,
+};
