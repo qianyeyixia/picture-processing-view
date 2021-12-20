@@ -5,8 +5,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    ctx: null,
-    canvas: null,
     imgSrc: null,
     width: 150, //宽度
     height: 150, //高度
@@ -17,33 +15,24 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    console.log("onload", options, app.globalData)
     this.cropper = this.selectComponent("#image-cropper");
-    const query = wx.createSelectorQuery();
-    query
-      .select("#testCanvas")
-      .fields({node:true, size:true})
-      .exec(res => {
-        console.log(res)
-        const ctx = res[0].node;
-        const canvas = ctx.getContext("2d")
-        canvas.setFillStyle('red')
-        canvas.fillRect(10, 10, 150, 100)
-        canvas.draw()
-        canvas.fillRect(50, 50, 150, 100)
-        canvas.draw(true) 
+    if (app.globalData.imgSrc) {
+      this.setData({
+        imgSrc: app.globalData.imgSrc
       })
-   
+    }
   },
-
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
     console.log("app", app);
-    if (!app.globalData.userInfo || app.globalData.userInfo == {}) {
+    if (!app.globalData.userInfo) {
       wx.login({
         timeout: 5000,
       }).then((res) => {
+        console.log("wx.login", res)
         wx.request({
           url: `${app.globalData.baseUrl}/wx/login`,
           data: {
@@ -57,10 +46,22 @@ Page({
             console.log(app.globalData);
           },
         });
-      });
+      }).error(e => {
+        console.error();
+      })
     }
   },
-
+  onShow() {
+    console.log("show" , app.globalData.imgSrc)
+    if (app.globalData.imgSrc) {
+      this.setData({
+        imgSrc: app.globalData.imgSrc
+      })
+    }
+  },
+  onHide() {
+    console.log("onhide")
+  },
   chooseImage: function () {
     let _this = this;
     wx.showLoading()
@@ -103,9 +104,36 @@ Page({
       });
     });
   },
+  drawImage: function (id, imageSrc, width, height, color = "wdhite") {
+    const {
+      ctx,
+      canvas
+    } = this.data;
+    let img = canvas.createImage();
+    img.id = id;
+    img.src = imageSrc;
+    img.width = width;
+    img.height = height;
+    img.onload = function () {
+      console.log("图片加载完成");
+      ctx.drawImage(img, 0, 0, width, height);
+    };
+  },
   toCropper() {
     wx.navigateTo({
-      url: `./cropper?imgSrc=${this.data.imgaeSrc}`,
+      url: `cropper?imgSrc=${this.data.imgSrc}`,
     })
+  },
+  toSlice() {
+    wx.navigateTo({
+      url: `../slicePhoto/slicePhoto?imgSrc=${this.data.imgSrc}`,
+    })
+  },
+  isSrcEmpty() {
+    if(!this.data.imgSrc) {
+      wx.showToast({
+        title: "没有上传图片,不能切换"
+      })
+    }
   }
 });

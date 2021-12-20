@@ -2,12 +2,11 @@
 
 const app = getApp()
 Page({
-
 	/**
 	 * 页面的初始数据
 	 */
 	data: {
-		imgSrc: null,
+		imgSrc: "../../images/frame/frame11.png",
 		width: 250, //宽度
 		height: 250, //高度
 		max_width: 300,
@@ -19,10 +18,15 @@ Page({
 	/**
 	 * 生命周期函数--监听页面加载
 	 */
-	onLoad: function (options) {
+	onLoad: function (c) {
 		this.cropper = this.selectComponent("#image-cropper");
-		if (!options.imgSrc) {
+		console.log(c, !!c.imgSrc)
+		if (c.imgSrc === "null" || c.imgSrc === "undefined") {
 			this.cropper.upload(); //上传图片
+		} else {
+			this.setData({
+				imgSrc: c.imgSrc
+			})
 		}
 		if(app.globalData.imgSrc) {
 			this.setData({
@@ -160,7 +164,7 @@ Page({
 	submit() {
 		console.log("submit")
 		this.cropper.getImg((obj) => {
-			console.log("submit obj", obj)
+			console.log("obje", obj)
 			app.globalData.imgSrc = obj.url;
 			wx.navigateTo({
 			  url: `../canvas/index?imgSrc=${obj.url}`,

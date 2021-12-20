@@ -40,6 +40,7 @@ Page({
       this.setData({
         canIUseGetUserProfile: true
       })
+      
     }
   },
   getUserProfile(e) {
@@ -51,6 +52,11 @@ Page({
         this.setData({
           userInfo: res.userInfo,
           hasUserInfo: true
+        })
+        wx.request({
+          url: `${app.globalData.baseUrl}/wx/save`,
+          data:res.userInfo,
+          method: "GET",
         })
       }
     })

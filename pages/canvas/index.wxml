@@ -3,12 +3,14 @@
     <canvas id="testCanvas" type="2d" style="width: 300px;height: 300px;"></canvas>
     <view class="header">
         <view class="upload_img" bindtap="chooseImage">
-            <image wx:if="{{imgsrc}}" src="{{imgSrc}}" style="width: 150rpx;height: 150rpx;"></image>
-            <text wx:else>上传图片</text>
+            <block wx:if="{{imgSrc}}">
+                <image src="{{imgSrc}}" style="width: 150rpx;height: 150rpx;"></image>
+            </block>
+            <block wx:else>上传图片</block>
         </view>
     </view>
-    <button class="cu-btn block" bindtap="toCropper">前往cropper页面</button>
-    <button class="cu-btn block">换背景框</button>
-    <button class="cu-btn block">换背景色</button>
-    <button class="cu-btn block">保存</button>
+    <view class="">
+        <button class="cu-btn" bindtap="toCropper">前往cropper页面</button>
+        <button class="cu-btn" bindtap="toSlice">照片拼相框</button>
+    </view>
 </view>

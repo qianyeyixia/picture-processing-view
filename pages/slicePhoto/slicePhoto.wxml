@@ -1,0 +1,23 @@
+<!--pages/slicePhoto/slicePhoto.wxml-->
+<view class="splice-page">
+    <canvas canvasId="tempCanvas" style="width:{{totalWidth}}px;height:{{totalHeight}}px;position:absolute;left:-999999px"></canvas>
+    <view class="saveButton" wx:if="{{readuSave}}">
+        <text class="cuIcon-upload icon-upload" bindtap="chooseImags"></text>
+        <text class="icon-save" bindtap="saveImgToPhone"></text>
+    </view>
+    <view class="header">
+        <view class="upload_img photoframe" style="height: {{frameHeight}}px;">
+            <image class="frame" mode="widthFix" src="{{frameSrc}}"></image>
+            <image class="photo" src="{{imgSrc}}" disableScroll="true" style="width:{{photoWidth}}px;height:{{photoHeight}}px"></image>
+        </view>
+    </view>
+
+    <view>
+        <scroll-view scroll-x="true" class="swiper-content" wx:if="{{frameSrcs.length > 0}}">
+            <view class="frameBox" data-src="{{frame_path+item.picturePath}}" wx:for="{{frameSrcs}}" wx:key="*this" bindtap="chooseFrame">
+                <image class="frameBox-image" mode="aspectFit" src="{{frame_path+item.picturePath}}"></image>
+                <!-- <text class="frameBox-text">{{item.title}}</text> -->
+            </view>
+        </scroll-view>
+    </view>
+</view>
