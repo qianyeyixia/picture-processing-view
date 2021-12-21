@@ -57,7 +57,9 @@ Page({
         getPhoteFrameList(this, app)
             .then((res) => {
                 console.log(res);
-                const { data } = res;
+                const {
+                    data
+                } = res;
                 this.setData({
                     frame_path: data.result,
                     frameSrcs: data.resultList,
@@ -118,10 +120,8 @@ Page({
                 console.log("frameInfo", frameInfo);
                 t.setData({
                     imgSrc: res.result.picturePath,
-                    photoWidth:
-                        (imgaeSrcInfo.width / frameInfo.height) * frameInfo.width - 40,
-                    photoHeight:
-                        (imgaeSrcInfo.height / frameInfo.height) * frameInfo.width - 40,
+                    photoWidth: (imgaeSrcInfo.width / frameInfo.height) * frameInfo.width - 40,
+                    photoHeight: (imgaeSrcInfo.height / frameInfo.height) * frameInfo.width - 40,
                 });
                 wx.hideLoading();
             };
@@ -158,59 +158,46 @@ Page({
         });
         console.log("imgInfo", imgInfo);
         console.log("frameInfo", frameInfo);
-        let _width =
-            frameInfo.width > imgInfo.width
-                ? frameInfo.width
-                : (imgInfo.width / frameInfo.height) * frameInfo.width;
-        let _height =
-            frameInfo.height > imgInfo.height
-                ? frameInfo.height
-                : (imgInfo.height / frameInfo.width) * frameInfo.height;
-        await i.drawImage(frameInfo.path, 0, 0, _width, _height);
-        t.setData({
-            totalHeight: Math.max(imgInfo.height, frameInfo.height),
-            totalWidth: Math.max(imgInfo.width, frameInfo.width),
-        });
-        let _offsetX = Math.abs((frameInfo.width - imgInfo.width) / 2);
-        let _offsetY = Math.abs((frameInfo.height - imgInfo.height) / 2);
-        await i.drawImage(
-            imgInfo.path,
-            _offsetX,
-            _offsetY,
-            imgInfo.width,
-            imgInfo.height
-        );
-        await i.draw();
-        const _tempFilePath = await t.getTemFile();
-        await wx.saveImageToPhotosAlbum({
-            filePath: _tempFilePath.tempFilePath,
-        });
-        wx.hideLoading();
+        let _width = frameInfo.width > imgInfo.width ? frameInfo.width : imgInfo.width / frameInfo.height * frameInfo.width
+        let _heiht = frameInfo.height > imgInfo.height ? frameInfo.height : imgInfo.height / frameInfo.width * frameInfo.height
+        await i.drawImage(frameInfo.path, 0, 0, _width, _heiht)
+        let _x = Math.max(frameInfo.width - imgInfo.width, 0)
+        let _y = Math.max(frameInfo.height - imgInfo.height, 0)
+        await i.drawImage(imgInfo.path, _x, _y, imgInfo.width, imgInfo.height)
+        await i.draw()
+        const _c = await t.getTemFile()
+        const _saveRes = await wx.saveImageToPhotosAlbum({
+            filePath: _c.tempFilePath
+        })
+        wx.hideLoading()
         wx.showModal({
-            title: "温馨提示",
-            content: "图片保存成功，可在相册中查看",
+            title: '温馨提示',
+            content: '图片保存成功，可在相册中查看',
             showCancel: false,
             success(cc) {
-                wx.clear;
-            },
-        });
-        // t.getTemFile().then((_c) => {
-        //     console.log("getTemFile", _c);
-        //     wx.saveImageToPhotosAlbum({
-        //         filePath: _c.tempFilePath
-        //     }).then(saveRes => {
-        //         console.log(" saveImageToPhotosAlbum函数 then", saveRes)
-        //         wx.hideLoading()
-        //         wx.showModal({
-        //             title: '温馨提示',
-        //             content: '图片保存成功，可在相册中查看',
-        //             showCancel: false,
-        //             success(cc) {
-        //                 wx.clear
-        //             }
+                wx.clear
+            }
+        })
+        // await t.getTemFile().then((_c) => {
+        //         console.log("getTemFile", _c);
+        //         wx.saveImageToPhotosAlbum({
+        //             filePath: _c.tempFilePath
+        //         }).then(saveRes => {
+        //             console.log(" saveImageToPhotosAlbum函数 then", saveRes)
+        //             wx.hideLoading()
+        //             wx.showModal({
+        //                 title: '温馨提示',
+        //                 content: '图片保存成功，可在相册中查看',
+        //                 showCancel: false,
+        //                 success(cc) {
+        //                     wx.clear
+        //                 }
+        //             })
         //         })
         //     })
-        // })
+
+
+
         // console.log("frameSrc", frameSrc);
         // wx.getImageInfo({
         //     src: t.data.frameSrc
