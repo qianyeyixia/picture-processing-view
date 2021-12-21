@@ -5,54 +5,63 @@ function wxChooseImage(el, app, uploadSuccess) {
             count: 1,
             sizeType: ["original", "compressed"],
             sourceType: ["album", "camera"],
-        }).then(res => {
+        }).then(async res => {
             wx.showLoading({
                 title: "上传中~~"
             })
             console.log("wx.chooseImage success", res);
-            const uploadTask = wx.uploadFile({
-                filePath: res.tempFilePaths[0],
-                name: "file",
-                url: `${app.globalData.baseUrl}/wx/photo/getForeground`,
-                formData: {
-                    openId: app.globalData.userInfo.openId,
-                },
-                success: (fileRes) => {
-                    console.log("success", fileRes);
-                    let _data = JSON.parse(fileRes.data);
-                    console.log(_data);
-                    el.setData({
-                        imgSrc: _data.result.picturePath,
-                    });
-                    resolve(_data)
-                    uploadSuccess(_data)
-                },
-                fail: (error) => {
-                    console.log("fail res", res);
-                    reject(error)
-                },
-                complete: () => {
-                    wx.hideLoading()
-                }
-            });
-            uploadTask.onProgressUpdate((t) => {
-                console.log("上传进度", t.progress);
-                if (res.progress == 100) {
-                    wx.hideLoading().then(() => {
-                        uploadSuccess({
-                            ...t,
-                            ...res
-                        })
-                    })
-                    resolve({
-                        ...t,
-                        ...res
-                    })
+            const data = await wx.getImageInfo({
+                src: res.tempFilePaths[0],
+            })
+            el.setData({
+                imgSrc: data.path,
+                imgObj: data,
+            })
+            uploadSuccess(data)
+            resolve(data)
+            // const uploadTask = wx.uploadFile({
+            //     filePath: res.tempFilePaths[0],
+            //     name: "file",
+            //     url: `${app.globalData.baseUrl}/wx/photo/getForeground`,
+            //     formData: {
+            //         openId: app.globalData.userInfo.openId,
+            //     },
+            //     success: (fileRes) => {
+            //         console.log("success", fileRes);
+            //         let _data = JSON.parse(fileRes.data);
+            //         console.log(_data);
+            //         el.setData({
+            //             imgSrc: _data.result.picturePath,
+            //         });
+            //         resolve(_data)
+            //         uploadSuccess(_data)
+            //     },
+            //     fail: (error) => {
+            //         console.log("fail res", res);
+            //         reject(error)
+            //     },
+            //     complete: () => {
+            //         wx.hideLoading()
+            //     }
+            // });
+            // uploadTask.onProgressUpdate((t) => {
+            //     console.log("上传进度", t.progress);
+            //     if (res.progress == 100) {
+            //         wx.hideLoading().then(() => {
+            //             uploadSuccess({
+            //                 ...t,
+            //                 ...res
+            //             })
+            //         })
+            //         resolve({
+            //             ...t,
+            //             ...res
+            //         })
 
-                }
-                console.log("已经上传的数据长度", t.totalBytesSent);
-                console.log("预期需要上传的数据总长度", t.totalBytesExpectedToSend);
-            });
+            //     }
+            //     console.log("已经上传的数据长度", t.totalBytesSent);
+            //     console.log("预期需要上传的数据总长度", t.totalBytesExpectedToSend);
+            // });
         })
     })
 }

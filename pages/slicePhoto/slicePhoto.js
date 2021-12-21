@@ -13,7 +13,7 @@ Page({
         deviceRatio: 1,
         readuSave: true,
         imgSrc: "",
-        frameSrc: "",
+        frameSrc: "http://www.shazhibin.top/frame_path/2021-11/962708232feb46eb9891734d3ab8fc84.png",
         frameHeight: 0,
         frameWidth: 0,
         isFrameChoose: !1,
@@ -110,18 +110,22 @@ Page({
             });
             const prmises = async () => {
                 console.log("prmises 函数触发");
-                const imgaeSrcInfo = await wx.getImageInfo({
-                    src: res.result.picturePath,
-                });
+                // const imgaeSrcInfo = await wx.getImageInfo({
+                //     // src: res.result.picturePath,
+                //     src: res.path
+                // });
+                const imgaeSrcInfo = this.data.imgObj
                 const frameInfo = await wx.getImageInfo({
-                    src: this.data.frameSrc,
+                    // src: res.result.picturePath,
+                    src: this.data.frameSrc
                 });
                 console.log("imgaeSrcInfo", imgaeSrcInfo);
                 console.log("frameInfo", frameInfo);
                 t.setData({
-                    imgSrc: res.result.picturePath,
-                    photoWidth: (imgaeSrcInfo.width / frameInfo.height) * frameInfo.width - 40,
-                    photoHeight: (imgaeSrcInfo.height / frameInfo.height) * frameInfo.width - 40,
+                    // imgSrc: res.result.picturePath,
+                    photoWidth: Math.max(imgaeSrcInfo.width, ),
+                    photoHeight: imgaeSrcInfo.height,
+                    frameObj: frameInfo
                 });
                 wx.hideLoading();
             };
@@ -133,130 +137,64 @@ Page({
      * @param {*}
      * @return {*}
      */
-    async saveImgToPhone() {
+    saveImgToPhone() {
+        console.log("async saveImgToPhone");
         const t = this;
         const i = wx.createCanvasContext("tempCanvas", t);
         wx.showLoading({
-            title: "生成图片中",
+            title: "生成中",
         });
-        console.log("t", t, i, "i");
-        if (!t.data.frameSrc)
-            return wx.showToast({
-                title: "请选择相框",
-                icon: "error",
-            });
-        const frameInfo = await wx.getImageInfo({
-            src: t.data.frameSrc,
-        });
-        if (!t.data.imgSrc)
-            return wx.showToast({
-                title: "请选择图片",
-                icon: "error",
-            });
-        const imgInfo = await wx.getImageInfo({
-            src: t.data.imgSrc,
-        });
-        console.log("imgInfo", imgInfo);
-        console.log("frameInfo", frameInfo);
-        let _width = frameInfo.width > imgInfo.width ? frameInfo.width : imgInfo.width / frameInfo.height * frameInfo.width
-        let _heiht = frameInfo.height > imgInfo.height ? frameInfo.height : imgInfo.height / frameInfo.width * frameInfo.height
-        await i.drawImage(frameInfo.path, 0, 0, _width, _heiht)
-        let _x = Math.max(frameInfo.width - imgInfo.width, 0)
-        let _y = Math.max(frameInfo.height - imgInfo.height, 0)
-        await i.drawImage(imgInfo.path, _x, _y, imgInfo.width, imgInfo.height)
-        await i.draw()
-        const _c = await t.getTemFile()
-        const _saveRes = await wx.saveImageToPhotosAlbum({
-            filePath: _c.tempFilePath
-        })
-        wx.hideLoading()
-        wx.showModal({
-            title: '温馨提示',
-            content: '图片保存成功，可在相册中查看',
-            showCancel: false,
-            success(cc) {
-                wx.clear
-            }
-        })
-        // await t.getTemFile().then((_c) => {
-        //         console.log("getTemFile", _c);
-        //         wx.saveImageToPhotosAlbum({
-        //             filePath: _c.tempFilePath
-        //         }).then(saveRes => {
-        //             console.log(" saveImageToPhotosAlbum函数 then", saveRes)
-        //             wx.hideLoading()
-        //             wx.showModal({
-        //                 title: '温馨提示',
-        //                 content: '图片保存成功，可在相册中查看',
-        //                 showCancel: false,
-        //                 success(cc) {
-        //                     wx.clear
-        //                 }
-        //             })
-        //         })
-        //     })
-
-
-
-        // console.log("frameSrc", frameSrc);
-        // wx.getImageInfo({
-        //     src: t.data.frameSrc
-        // }).then(res => {
-        //     console.log("外边框", res);
-        // console.log(t.frameHeight, t.frameWidth,t.deviceRatio, res.width / (750 * t.deviceRatio));
-        // let h =  res.width / (750 * t.deviceRatio),
-        // c = res.width / h,
-        // n = res.height / h,
-        // l = t.data.totalHeight,
-        // r = t.data.totalHeight + n;
-        // t.setData({
-        //     totalHeight: r,
-        //     totalWidth: res.width,
-        // })
-        // console.log("l", l, "c", c, "n", n);
-        //     i.drawImage(res.path, 0, 0, t.frameWidth, t.frameHeight)
-        //     wx.getImageInfo({
-        //         src: t.data.imgSrc,
-        //     }).then(_res => {
-        //         console.log("头像大小", _res)
-        //         let aa =  t.frameHeight ? t.frameHeight : 1e3 * t.deviceRatio;
-
-        //         i.drawImage(_res.path, 0, 0, nn, ll)
-        //         i.draw()
-        //         setTimeout(() => {
-        //             t.getTemFile().then((_c) => {
-        //                 console.log("getTemFile", _c);
-        //                 wx.saveImageToPhotosAlbum({
-        //                     filePath: _c.tempFilePath
-        //                 }).then(saveRes => {
-        //                     console.log(" saveImageToPhotosAlbum函数 then", saveRes)
-        //                     wx.hideLoading()
-        //                     wx.showModal({
-        //                         title: '温馨提示',
-        //                         content: '图片保存成功，可在相册中查看',
-        //                         showCancel: false,
-        //                         success(cc) {
-        //                             wx.clear
-        //                         }
-        //                     })
-        //                 })
-        //             })
-        //         }, 1599)
-        //     })
-        // })
+        let frameInfo = t.data.frameObj
+        let imgInfo = t.data.frameObj
+        let _offsetX = Math.abs((frameInfo.width - imgInfo.width) / 2);
+        let _offsetY = Math.abs((frameInfo.height - imgInfo.height) / 2);
+        let _width = Math.max(imgInfo.width, frameInfo.width);
+        let _height = Math.max(imgInfo.height, frameInfo.height);
+        i.drawImage(frameInfo.path, 0, 0, _width, _height)
+        i.drawImage(imgInfo.path, _offsetX, _offsetY, imgInfo.width, imgInfo.height)
+        console.log("drawImage -----");
+        i.draw()
+        setTimeout(() => {
+            t.getTemFile({
+                width: _width,
+                height: _height,
+            }).then((_c) => {
+                console.log("getTemFile", _c);
+                wx.saveImageToPhotosAlbum({
+                    filePath: _c.tempFilePath
+                }).then(saveRes => {
+                    console.log(" saveImageToPhotosAlbum函数 then", saveRes)
+                    wx.hideLoading()
+                    wx.showModal({
+                        title: '温馨提示',
+                        content: '图片保存成功，可在相册中查看',
+                        showCancel: false,
+                        success(cc) {
+                            wx.clear
+                        }
+                    })
+                })
+            })
+        }, 1599)
     },
-    getTemFile() {
+    getTemFile(options) {
         let t = this;
         return new Promise((resolve, reject) => {
             wx.canvasToTempFilePath({
-                canvasId: "tempCanvas",
-            })
+                    canvasId: "tempCanvas",
+                    x: 0,
+                    y: 0,
+                    destWidth: options.width,
+                    destHeight: options.height,
+                    fileType: "png",
+                })
                 .then((res) => {
                     resolve(res);
                 })
                 .catch((err) => {
+                    console.log("err", err);
+                    t.getTemFile(options);
                     reject(err);
-                    t.getTemFile();
                 });
         });
     },
