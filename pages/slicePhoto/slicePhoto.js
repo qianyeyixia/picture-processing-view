@@ -251,25 +251,47 @@ Page({
   getTemFile(options) {
     console.log("getTemFile 触发", options);
     let t = this;
-    wx.canvasToTempFilePath({
-        canvas: t.canvasNode,
-      })
-      .then((res) => {
-        console.log("getTemFile success", res);
-        wx.saveImageToPhotosAlbum({
-            filePath: res.tempFilePath,
-          })
-          .then((_res) => {
-            wx.hideLoading()
-            console.log(" _res", _res);
-          })
-          .catch((err) => {
-            console.log("err", err);
-          })
-      })
-      .catch((err) => {
-        console.log("getTemFile err", err);
-        this.getTemFile(options)
-      });
+    let c = this.canvasNode;
+    const url = c.toDataURL("image/png", 0.8)
+    console.log(url);
+    wx.getImageInfo({
+      src: url,
+    }).then(res => {
+      console.log(res);
+      wx.saveImageToPhotosAlbum({
+          filePath: res.path,
+        })
+        .then((_res) => {
+          wx.hideLoading()
+          console.log(" _res", _res);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        })
+    }).catch((e) => {
+      console.log("wx.getImageInfo err", e);
+    })
+
+
+    // wx.canvasToTempFilePath({
+    //     canvas: t.canvasNode,
+    //   })
+    //   .then((res) => {
+    //     console.log("getTemFile success", res);
+    //     wx.saveImageToPhotosAlbum({
+    //         filePath: res.tempFilePath,
+    //       })
+    //       .then((_res) => {
+    //         wx.hideLoading()
+    //         console.log(" _res", _res);
+    //       })
+    //       .catch((err) => {
+    //         console.log("err", err);
+    //       })
+    //   })
+    //   .catch((err) => {
+    //     console.log("getTemFile err", err);
+    //     this.getTemFile(options)
+    //   });
   },
 });
