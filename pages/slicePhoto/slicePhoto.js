@@ -19,8 +19,7 @@ Page({
     readuSave: true,
     BoxHeight: 0,
     imgSrc: "",
-    frameSrc:
-      "http://www.shazhibin.top/frame_path/2021-11/962708232feb46eb9891734d3ab8fc84.png",
+    frameSrc: "http://www.shazhibin.top/frame_path/2021-11/962708232feb46eb9891734d3ab8fc84.png",
     frameHeight: 0,
     frameWidth: 0,
     isFrameChoose: !1,
@@ -39,6 +38,7 @@ Page({
     totalWidth: 280,
     frame_path: "http://www.shazhibin.top/frame_path",
     longImageSrcs: [],
+    resetStatus: 5,
   },
   onReady: function () {
     const query = wx.createSelectorQuery().in(this);
@@ -78,24 +78,30 @@ Page({
         imgViewHeight: this.device.windowHeight - 160 * this.deviceRatio,
       });
     }
-    getPhoteFrameList(this, app)
-      .then((res) => {
-        console.log(res);
-        const { data } = res;
-        this.setData({
-          frame_path: data.result,
-          frameSrcs: data.resultList,
-        });
-      })
-      .catch((err) => {
-        wxLogin.getUserInfo(app).then((res) => {
-          console.log("wxLogin", res);
-          wx.setStorage({
-            key: "useInfo",
-            data: res.data.result,
-          });
-        });
+    this.getFrameList()
+  },
+  getFrameList() {
+    let t = this
+    getPhoteFrameList(this, app).then(res => {
+      const {
+        data
+      } = res;
+      t.setData({
+        frame_path: data.result,
+        frameSrcs: data.resultList,
       });
+    }).catch(err => {
+      wxLogin.getUserInfo(app).then((_res) => {
+        wx.setStorage({
+          key: "userInfo",
+          data: _res.data.result,
+        });
+        t.setData({
+          resetStatus: t.data.resetStatus--
+        })
+        t.getFrameList(t, app)
+      });
+    })
   },
   /**
    * @description: 选择背景框
@@ -161,7 +167,7 @@ Page({
           photoWidth: Math.min(imgaeSrcInfo.width, frameInfo.width),
           photoHeight: Math.min(imgaeSrcInfo.height, frameInfo.height),
           frameObj: frameInfo,
-          BoxHeight:Math.max(imgaeSrcInfo.height, frameInfo.height),
+          BoxHeight: Math.max(imgaeSrcInfo.height, frameInfo.height),
         });
       });
     });
@@ -180,22 +186,27 @@ Page({
       title: "生成中",
     });
     let frameInfo = t.data.frameObj;
-    let imgInfo = t.data.frameObj;
+    let imgInfo = t.data.imgObj;
+    console.log("frameInfo", frameInfo);
+    console.log("imgInfo", imgInfo);
     let _offsetX = Math.abs((frameInfo.width - imgInfo.width) / 2);
     let _offsetY = Math.abs((frameInfo.height - imgInfo.height) / 2);
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
     console.log("i", i);
-    console.log(frameInfo,imgInfo);
-    c.width = _width;
-    c.height = _height;
-    i.scale(t.dpr, t.dpr);
-    let framImgEl = t.canvasNode.createImage();
-    framImgEl.src = frameInfo.path;
+    c.width = _width * t.dpr;
+    c.height = _height * t.dpr;
+    // t.setData({
+    //   totalHeight: _height * t.dpr,
+    //   totalWidth:　_width * t.dpr
+    // })
     console.log(_width, _height, frameInfo, imgInfo, _offsetX, _offsetY);
+    let framImgEl = c.createImage();
+    console.log("framImgEl start", framImgEl);
     framImgEl.onLoad = () => {
+      console.log("framImgEl", framImgEl);
       i.drawImage(
-        framImgEl,
+        frameInfo.path,
         0,
         0,
         _width,
@@ -206,11 +217,21 @@ Page({
         frameInfo.height
       );
     };
+    framImgEl.onerror = (e) => {
+      console.log("framImgEl err", framImgEl, e);
 
-    let imgEl = t.canvasNode.createImage();
+    }
+    framImgEl.src = frameInfo.path;
+
+    let imgEl = c.createImage();
+    console.log("imgEl start", imgEl);
+    imgEl.onerror = (e) => {
+      console.log("imgEl err", imgEl, e);
+    }
     imgEl.onLoad = () => {
+      console.log("imgEl", imgEl);
       i.drawImage(
-        imgEl,
+        imgInfo.path,
         _offsetX,
         _offsetY,
         imgInfo.width,
@@ -218,26 +239,26 @@ Page({
       );
     };
     imgEl.src = imgInfo.path;
-    console.log("drawImage -----",_width, _height);
+    console.log("drawImage -----", _width, _height);
     setTimeout(() => {
       t.getTemFile({
         width: _width,
-        height:_height
+        height: _height
       })
     }, 800)
-    
+
   },
   getTemFile(options) {
     console.log("getTemFile 触发", options);
     let t = this;
     wx.canvasToTempFilePath({
-      canvas: t.canvasNode,
-    })
+        canvas: t.canvasNode,
+      })
       .then((res) => {
         console.log("getTemFile success", res);
         wx.saveImageToPhotosAlbum({
-          filePath: res.tempFilePath,
-        })
+            filePath: res.tempFilePath,
+          })
           .then((_res) => {
             wx.hideLoading()
             console.log(" _res", _res);
