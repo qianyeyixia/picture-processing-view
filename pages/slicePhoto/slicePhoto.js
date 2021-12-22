@@ -9,6 +9,9 @@ Page({
    */
   deviceRatio: 0,
   device: null,
+  ctx: null,
+  canvasNode: null,
+  dpr:0,
   data: {
     imgObj: null,
     frameObj: null,
@@ -31,10 +34,24 @@ Page({
     whichDeleteShow: 99999,
     frameSrcs: [],
     device: null,
-    totalHeight: 0,
-    totalWidth: 15,
+    totalHeight: 320,
+    totalWidth: 280,
     frame_path: "http://www.shazhibin.top/frame_path",
     longImageSrcs: [],
+  },
+  onReady: function () {
+    const query = wx.createSelectorQuery().in(this);
+    query.select("#tempCanvas").fields({
+      node: true,
+      size: true,
+    }).exec((res) => {
+      this.canvasNode = res[0].node
+      this.ctx = this.canvasNode.getContext('2d')
+      this.dpr = app.globalData.myDevice.pixelRatio
+      this.canvasNode.width = this.data.totalWidth * this.dpr
+      this.canvasNode.height = this.data.totalWidth * this.dpr
+      this.ctx.scale(this.dpr, this.dpr)
+    })
   },
 
   /**
@@ -151,7 +168,8 @@ Page({
    */
   saveImgToPhone() {
     const t = this;
-    const i = wx.createCanvasContext("tempCanvas", t);
+    const i = this.ctx
+    console.log(t, i);
     wx.showLoading({
       title: "生成中",
     });
@@ -161,16 +179,35 @@ Page({
     let _offsetY = Math.abs((frameInfo.height - imgInfo.height) / 2);
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
-    i.drawImage(frameInfo.path, 0, 0, _width, _height);
-    i.drawImage(
-      imgInfo.path,
-      _offsetX,
-      _offsetY,
-      imgInfo.width,
-      imgInfo.height
-    );
+    console.log("i", i);
+    let framImgEl = t.canvasNode.createImage()
+    framImgEl.src = frameInfo.path
+    framImgEl.onLoad = () => {
+      i.drawImage(
+        framImgEl,
+        0,
+        0,
+        _width,
+        _height,
+        0,
+        0,
+        frameInfo.width,
+        frameInfo.height
+      );
+    }
+    let imgEl = t.canvasNode.createImage()
+    imgEl.src = imgInfo.path
+    imgEl.onLoad = () => {
+      i.drawImage(
+        imgInfo.path,
+        _offsetX,
+        _offsetY,
+        imgInfo.width,
+        imgInfo.height
+      );
+    }
     console.log("drawImage -----");
-    i.draw(true, () => {
+    i.draw(true, function () {
       wx.canvasToTempFilePath({
         canvasId: "tempCanvas",
         x: 0,
@@ -179,15 +216,17 @@ Page({
         destHeight: _height,
         fileType: "png",
       })
-        .then(async (res) => {
+        .then((res) => {
           console.log("getTemFile success", err);
-          const [_saveError, _saveData] = app.to(
-            wx.saveImageToPhotosAlbum({
-              filePath: res.tempFilePath,
+          wx.saveImageToPhotosAlbum({
+            filePath: res.tempFilePath,
+          })
+            .then((_res) => {
+              console.log(" _res", _res);
             })
-          );
-          console.log(" _saveError", _saveError);
-          console.log(" _saveData", _saveData);
+            .catch((err) => {
+              console.log("err", err);
+            });
         })
         .catch((err) => {
           console.log("getTemFile err", err);

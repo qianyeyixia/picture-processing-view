@@ -1,6 +1,6 @@
 <!--pages/slicePhoto/slicePhoto.wxml-->
 <view class="splice-page">
-    <canvas canvasId="tempCanvas" style="width:{{totalWidth}}px;height:{{totalHeight}}px;position:absolute;left:-999999px"></canvas>
+    <canvas canvasId="tempCanvas" id="tempCanvas" type="2d" style="width:{{totalWidth}}px;height:{{totalHeight}}px;position:absolute;left:-999999px"></canvas>
     <view class="saveButton" wx:if="{{readuSave}}">
         <text class="cuIcon-upload icon-upload" bindtap="chooseImags"></text>
         <text class="icon-save" bindtap="saveImgToPhone"></text>
