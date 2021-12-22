@@ -170,8 +170,7 @@ Page({
       imgInfo.height
     );
     console.log("drawImage -----");
-    i.draw();
-    setTimeout(() => {
+    i.draw(true, () => {
       wx.canvasToTempFilePath({
         canvasId: "tempCanvas",
         x: 0,
@@ -193,29 +192,7 @@ Page({
         .catch((err) => {
           console.log("getTemFile err", err);
         });
-    }, 1599);
-    // setTimeout(() => {
-    //     t.getTemFile({
-    //         width: _width,
-    //         height: _height,
-    //     }).then((_c) => {
-    //         console.log("getTemFile", _c);
-    //         wx.saveImageToPhotosAlbum({
-    //             filePath: _c.tempFilePath
-    //         }).then(saveRes => {
-    //             console.log(" saveImageToPhotosAlbum函数 then", saveRes)
-    //             wx.hideLoading()
-    //             wx.showModal({
-    //                 title: '温馨提示',
-    //                 content: '图片保存成功，可在相册中查看',
-    //                 showCancel: false,
-    //                 success(cc) {
-    //                     wx.clear
-    //                 }
-    //             })
-    //         })
-    //     })
-    // }, 1599)
+    });
   },
   getTemFile(options) {
     console.log("getTemFile 触发");
