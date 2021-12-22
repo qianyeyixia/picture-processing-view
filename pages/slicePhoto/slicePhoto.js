@@ -174,6 +174,7 @@ Page({
   saveImgToPhone() {
     const t = this;
     const i = this.ctx;
+    const c = this.canvasNode;
     console.log(t, i);
     wx.showLoading({
       title: "生成中",
@@ -186,7 +187,12 @@ Page({
     let _height = Math.max(imgInfo.height, frameInfo.height);
     console.log("i", i);
     console.log(frameInfo,imgInfo);
+    c.width = _width;
+    c.height = _height;
+    i.scale(t.dpr, t.dpr);
     let framImgEl = t.canvasNode.createImage();
+    framImgEl.src = frameInfo.path;
+    console.log(_width, _height, frameInfo, imgInfo, _offsetX, _offsetY);
     framImgEl.onLoad = () => {
       i.drawImage(
         framImgEl,
@@ -200,12 +206,11 @@ Page({
         frameInfo.height
       );
     };
-    framImgEl.src = frameInfo.path;
 
     let imgEl = t.canvasNode.createImage();
     imgEl.onLoad = () => {
       i.drawImage(
-        imgInfo.path,
+        imgEl,
         _offsetX,
         _offsetY,
         imgInfo.width,
@@ -234,11 +239,12 @@ Page({
           filePath: res.tempFilePath,
         })
           .then((_res) => {
+            wx.hideLoading()
             console.log(" _res", _res);
           })
           .catch((err) => {
             console.log("err", err);
-          });
+          })
       })
       .catch((err) => {
         console.log("getTemFile err", err);
