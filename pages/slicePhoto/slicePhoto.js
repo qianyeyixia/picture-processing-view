@@ -66,6 +66,10 @@ Page({
             .catch((err) => {
                 wxLogin.getUserInfo(app).then((res) => {
                     console.log("wxLogin", res);
+                    wx.setStorage({
+                        key: "useInfo",
+                        data: res.data.result
+                    })
                 });
             });
     },
