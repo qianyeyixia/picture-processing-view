@@ -11,12 +11,13 @@ Page({
   device: null,
   ctx: null,
   canvasNode: null,
-  dpr:0,
+  dpr: 0,
   data: {
     imgObj: null,
     frameObj: null,
     deviceRatio: 1,
     readuSave: true,
+    BoxHeight: 0,
     imgSrc: "",
     frameSrc:
       "http://www.shazhibin.top/frame_path/2021-11/962708232feb46eb9891734d3ab8fc84.png",
@@ -41,17 +42,20 @@ Page({
   },
   onReady: function () {
     const query = wx.createSelectorQuery().in(this);
-    query.select("#tempCanvas").fields({
-      node: true,
-      size: true,
-    }).exec((res) => {
-      this.canvasNode = res[0].node
-      this.ctx = this.canvasNode.getContext('2d')
-      this.dpr = app.globalData.myDevice.pixelRatio
-      this.canvasNode.width = this.data.totalWidth * this.dpr
-      this.canvasNode.height = this.data.totalWidth * this.dpr
-      this.ctx.scale(this.dpr, this.dpr)
-    })
+    query
+      .select("#tempCanvas")
+      .fields({
+        node: true,
+        size: true,
+      })
+      .exec((res) => {
+        this.canvasNode = res[0].node;
+        this.ctx = this.canvasNode.getContext("2d");
+        this.dpr = app.globalData.myDevice.pixelRatio;
+        this.canvasNode.width = 100 * this.dpr;
+        this.canvasNode.height = 100 * this.dpr;
+        this.ctx.scale(this.dpr, this.dpr);
+      });
   },
 
   /**
@@ -157,6 +161,7 @@ Page({
           photoWidth: Math.min(imgaeSrcInfo.width, frameInfo.width),
           photoHeight: Math.min(imgaeSrcInfo.height, frameInfo.height),
           frameObj: frameInfo,
+          BoxHeight:Math.max(imgaeSrcInfo.height, frameInfo.height),
         });
       });
     });
@@ -168,7 +173,7 @@ Page({
    */
   saveImgToPhone() {
     const t = this;
-    const i = this.ctx
+    const i = this.ctx;
     console.log(t, i);
     wx.showLoading({
       title: "生成中",
@@ -180,8 +185,8 @@ Page({
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
     console.log("i", i);
-    let framImgEl = t.canvasNode.createImage()
-    framImgEl.src = frameInfo.path
+    let framImgEl = t.canvasNode.createImage();
+    framImgEl.src = frameInfo.path;
     framImgEl.onLoad = () => {
       i.drawImage(
         framImgEl,
@@ -194,9 +199,9 @@ Page({
         frameInfo.width,
         frameInfo.height
       );
-    }
-    let imgEl = t.canvasNode.createImage()
-    imgEl.src = imgInfo.path
+    };
+    let imgEl = t.canvasNode.createImage();
+    imgEl.src = imgInfo.path;
     imgEl.onLoad = () => {
       i.drawImage(
         imgInfo.path,
@@ -205,55 +210,42 @@ Page({
         imgInfo.width,
         imgInfo.height
       );
-    }
-    console.log("drawImage -----");
-    i.draw(true, function () {
-      wx.canvasToTempFilePath({
-        canvasId: "tempCanvas",
-        x: 0,
-        y: 0,
-        destWidth: _width,
-        destHeight: _height,
-        fileType: "png",
+    };
+
+    console.log("drawImage -----",_width, _height);
+    setTimeout(() => {
+      t.getTemFile({
+        width: _width,
+        height:_height
       })
-        .then((res) => {
-          console.log("getTemFile success", err);
-          wx.saveImageToPhotosAlbum({
-            filePath: res.tempFilePath,
-          })
-            .then((_res) => {
-              console.log(" _res", _res);
-            })
-            .catch((err) => {
-              console.log("err", err);
-            });
-        })
-        .catch((err) => {
-          console.log("getTemFile err", err);
-        });
-    });
+    }, 800)
+    
   },
   getTemFile(options) {
-    console.log("getTemFile 触发");
+    console.log("getTemFile 触发", options);
     let t = this;
-    return new Promise((resolve, reject) => {
-      wx.canvasToTempFilePath({
-        canvasId: "tempCanvas",
-        x: 0,
-        y: 0,
-        destWidth: options.width,
-        destHeight: options.height,
-        fileType: "png",
-      })
-        .then((res) => {
-          console.log("getTemFile success", err);
-          resolve(res);
+    wx.canvasToTempFilePath({
+      canvas: t.canvasNode,
+      x: 0,
+      y: 0,
+      destWidth: options.width,
+      destHeight: options.height,
+    })
+      .then((res) => {
+        console.log("getTemFile success", err);
+        wx.saveImageToPhotosAlbum({
+          filePath: res.tempFilePath,
         })
-        .catch((err) => {
-          console.log("getTemFile err", err);
-          t.getTemFile(options);
-          reject(err);
-        });
-    });
+          .then((_res) => {
+            console.log(" _res", _res);
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      })
+      .catch((err) => {
+        console.log("getTemFile err", err);
+        this.getTemFile(options)
+      });
   },
 });
