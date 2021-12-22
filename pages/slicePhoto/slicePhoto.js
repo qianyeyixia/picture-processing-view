@@ -185,8 +185,8 @@ Page({
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
     console.log("i", i);
+    console.log(frameInfo,imgInfo);
     let framImgEl = t.canvasNode.createImage();
-    framImgEl.src = frameInfo.path;
     framImgEl.onLoad = () => {
       i.drawImage(
         framImgEl,
@@ -200,8 +200,9 @@ Page({
         frameInfo.height
       );
     };
+    framImgEl.src = frameInfo.path;
+
     let imgEl = t.canvasNode.createImage();
-    imgEl.src = imgInfo.path;
     imgEl.onLoad = () => {
       i.drawImage(
         imgInfo.path,
@@ -211,7 +212,7 @@ Page({
         imgInfo.height
       );
     };
-
+    imgEl.src = imgInfo.path;
     console.log("drawImage -----",_width, _height);
     setTimeout(() => {
       t.getTemFile({
@@ -226,13 +227,9 @@ Page({
     let t = this;
     wx.canvasToTempFilePath({
       canvas: t.canvasNode,
-      x: 0,
-      y: 0,
-      destWidth: options.width,
-      destHeight: options.height,
     })
       .then((res) => {
-        console.log("getTemFile success", err);
+        console.log("getTemFile success", res);
         wx.saveImageToPhotosAlbum({
           filePath: res.tempFilePath,
         })
