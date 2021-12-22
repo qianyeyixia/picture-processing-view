@@ -22,7 +22,7 @@ App({
 
     const hasUserInfo = userInfoData?.data?.openId ? true : false
     this.globalData = {
-      userInfo: userInfoData.data || null,
+      userInfo: userInfoData?.data || null,
       baseUrl: "http://www.shazhibin.top/service",
       imgaeSrc: undefined,
       hasUserInfo,
