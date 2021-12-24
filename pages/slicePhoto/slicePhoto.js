@@ -203,7 +203,7 @@ Page({
     console.log(_width, _height, frameInfo, imgInfo, _offsetX, _offsetY);
     let framImgEl = c.createImage();
     console.log("framImgEl start", framImgEl);
-    framImgEl.onLoad = () => {
+    framImgEl.onload = () => {
       console.log("framImgEl", framImgEl);
       i.drawImage(
         frameInfo.path,
@@ -228,7 +228,7 @@ Page({
     imgEl.onerror = (e) => {
       console.log("imgEl err", imgEl, e);
     }
-    imgEl.onLoad = () => {
+    imgEl.onload = () => {
       console.log("imgEl", imgEl);
       i.drawImage(
         imgInfo.path,
