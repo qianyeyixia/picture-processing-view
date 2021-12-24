@@ -187,20 +187,17 @@ Page({
     let imgInfo = t.data.imgObj;
     console.log("frameInfo", frameInfo);
     console.log("imgInfo", imgInfo);
-    let _offsetX = Math.abs((frameInfo.width - imgInfo.width) / 2);
-    let _offsetY = Math.abs((frameInfo.height - imgInfo.height) / 2);
+ 
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
-    console.log("i", i);
+    let _offsetX = Math.abs((_width - imgInfo.width - 10) / 2);
+    let _offsetY = Math.abs((_height - imgInfo.height - 10) / 2);
+    console.log("_offsetX,_offsetY ", _offsetX, _offsetY);
     c.width = _width;
     c.height = _height;
-    // t.setData({
-    //   totalHeight: _height * t.dpr,
-    //   totalWidth:　_width * t.dpr
-    // })
     console.log(_width, _height, frameInfo, imgInfo, _offsetX, _offsetY);
+   
     let framImgEl = c.createImage();
-    console.log("framImgEl start", framImgEl);
     framImgEl.onload = () => {
       console.log("framImgEl", framImgEl);
       i.drawImage(
@@ -211,25 +208,16 @@ Page({
         _height,
       );
     };
-    framImgEl.onerror = (e) => {
-      console.log("framImgEl err", framImgEl, e);
-
-    }
     framImgEl.src = frameInfo.path;
-
     let imgEl = c.createImage();
-    console.log("imgEl start", imgEl);
-    imgEl.onerror = (e) => {
-      console.log("imgEl err", imgEl, e);
-    }
     imgEl.onload = () => {
       console.log("imgEl", imgEl);
       i.drawImage(
         imgEl,
-        10,
-        10,
-        imgInfo.width - 20,
-        imgInfo.height - 20
+        _offsetX,
+        _offsetY,
+        c.width - 20,
+        c.height - 20,
       );
     };
     imgEl.src = imgInfo.path;
