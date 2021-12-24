@@ -114,17 +114,9 @@ Page({
       src: e.currentTarget.dataset.src,
       success: function (a) {
         console.log("a", a, t.data.deviceRatio);
-        let i = a.width / (750 * t.deviceRatio);
-        console.log("i", i);
-        t.frameHeight = a.height / i;
-        t.frameWidth = a.width / i;
-        if (t.frameHeight > 500) {
-          t.frameHeight = t.frameHeight - 500 + a.height;
-        }
-        console.log(a.width, "a.width", t.frameHeight, "t.frameHeight");
         t.setData({
-          frameHeight: t.frameHeight,
           frameSrc: e.currentTarget.dataset.src,
+          frameObj:a          
         });
       },
     });
@@ -141,6 +133,12 @@ Page({
         title: "保存中~",
       });
       const imgaeSrcInfo = this.data.imgObj;
+
+      t.setData({
+        photoHeight: imgaeSrcInfo.height - 20,
+        photoWidth: imgaeSrcInfo.width - 20,
+      })
+
       console.log("imgaeSrcInfo", imgaeSrcInfo);
       wx.downloadFile({
         url: t.data.frameSrc,
@@ -164,8 +162,8 @@ Page({
       }).then((frameInfo) => {
         console.log("frameInfo", frameInfo);
         t.setData({
-          photoWidth: Math.min(imgaeSrcInfo.width, frameInfo.width),
-          photoHeight: Math.min(imgaeSrcInfo.height, frameInfo.height),
+          photoWidth: imgaeSrcInfo.width - 20,
+          photoHeight: imgaeSrcInfo.height - 20,
           frameObj: frameInfo,
           BoxHeight: Math.max(imgaeSrcInfo.height, frameInfo.height),
         });
@@ -194,8 +192,8 @@ Page({
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
     console.log("i", i);
-    c.width = _width * t.dpr;
-    c.height = _height * t.dpr;
+    c.width = _width;
+    c.height = _height;
     // t.setData({
     //   totalHeight: _height * t.dpr,
     //   totalWidth:　_width * t.dpr
@@ -206,15 +204,11 @@ Page({
     framImgEl.onload = () => {
       console.log("framImgEl", framImgEl);
       i.drawImage(
-        frameInfo.path,
+        framImgEl,
         0,
         0,
         _width,
         _height,
-        0,
-        0,
-        frameInfo.width,
-        frameInfo.height
       );
     };
     framImgEl.onerror = (e) => {
@@ -231,11 +225,11 @@ Page({
     imgEl.onload = () => {
       console.log("imgEl", imgEl);
       i.drawImage(
-        imgInfo.path,
-        _offsetX,
-        _offsetY,
-        imgInfo.width,
-        imgInfo.height
+        imgEl,
+        10,
+        10,
+        imgInfo.width - 20,
+        imgInfo.height - 20
       );
     };
     imgEl.src = imgInfo.path;
@@ -252,46 +246,24 @@ Page({
     console.log("getTemFile 触发", options);
     let t = this;
     let c = this.canvasNode;
-    const url = c.toDataURL("image/png", 0.8)
-    console.log(url);
-    wx.getImageInfo({
-      src: url,
-    }).then(res => {
-      console.log(res);
-      wx.saveImageToPhotosAlbum({
-          filePath: res.path,
-        })
-        .then((_res) => {
-          wx.hideLoading()
-          console.log(" _res", _res);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        })
-    }).catch((e) => {
-      console.log("wx.getImageInfo err", e);
-    })
-
-
-    // wx.canvasToTempFilePath({
-    //     canvas: t.canvasNode,
-    //   })
-    //   .then((res) => {
-    //     console.log("getTemFile success", res);
-    //     wx.saveImageToPhotosAlbum({
-    //         filePath: res.tempFilePath,
-    //       })
-    //       .then((_res) => {
-    //         wx.hideLoading()
-    //         console.log(" _res", _res);
-    //       })
-    //       .catch((err) => {
-    //         console.log("err", err);
-    //       })
-    //   })
-    //   .catch((err) => {
-    //     console.log("getTemFile err", err);
-    //     this.getTemFile(options)
-    //   });
+    wx.canvasToTempFilePath({
+        canvas: t.canvasNode,
+      })
+      .then((res) => {
+        console.log("getTemFile success", res);
+        wx.saveImageToPhotosAlbum({
+            filePath: res.tempFilePath,
+          })
+          .then((_res) => {
+            wx.hideLoading()
+            console.log(" _res", _res);
+          })
+          .catch((err) => {
+            console.log("err", err);
+          })
+      })
+      .catch((err) => {
+        console.log("getTemFile err", err);
+      });
   },
 });
