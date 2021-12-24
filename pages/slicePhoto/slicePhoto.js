@@ -114,17 +114,9 @@ Page({
       src: e.currentTarget.dataset.src,
       success: function (a) {
         console.log("a", a, t.data.deviceRatio);
-        let i = a.width / (750 * t.deviceRatio);
-        console.log("i", i);
-        t.frameHeight = a.height / i;
-        t.frameWidth = a.width / i;
-        if (t.frameHeight > 500) {
-          t.frameHeight = t.frameHeight - 500 + a.height;
-        }
-        console.log(a.width, "a.width", t.frameHeight, "t.frameHeight");
         t.setData({
-          frameHeight: t.frameHeight,
           frameSrc: e.currentTarget.dataset.src,
+          frameObj:a          
         });
       },
     });
@@ -141,6 +133,12 @@ Page({
         title: "保存中~",
       });
       const imgaeSrcInfo = this.data.imgObj;
+
+      t.setData({
+        photoHeight: imgaeSrcInfo.height - 20,
+        photoWidth: imgaeSrcInfo.width - 20,
+      })
+
       console.log("imgaeSrcInfo", imgaeSrcInfo);
       wx.downloadFile({
         url: t.data.frameSrc,
@@ -164,8 +162,8 @@ Page({
       }).then((frameInfo) => {
         console.log("frameInfo", frameInfo);
         t.setData({
-          photoWidth: Math.min(imgaeSrcInfo.width, frameInfo.width),
-          photoHeight: Math.min(imgaeSrcInfo.height, frameInfo.height),
+          photoWidth: imgaeSrcInfo.width - 20,
+          photoHeight: imgaeSrcInfo.height - 20,
           frameObj: frameInfo,
           BoxHeight: Math.max(imgaeSrcInfo.height, frameInfo.height),
         });
@@ -189,51 +187,37 @@ Page({
     let imgInfo = t.data.imgObj;
     console.log("frameInfo", frameInfo);
     console.log("imgInfo", imgInfo);
-    let _offsetX = Math.abs((frameInfo.width - imgInfo.width) / 2);
-    let _offsetY = Math.abs((frameInfo.height - imgInfo.height) / 2);
+ 
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
-    console.log("i", i);
-    c.width = _width * t.dpr;
-    c.height = _height * t.dpr;
-    // t.setData({
-    //   totalHeight: _height * t.dpr,
-    //   totalWidth:　_width * t.dpr
-    // })
+    let _offsetX = Math.abs((_width - imgInfo.width - 20) / 2);
+    let _offsetY = Math.abs((_height - imgInfo.height - 20) / 2);
+    console.log("_offsetX,_offsetY ", _offsetX, _offsetY);
+    c.width = _width;
+    c.height = _height;
     console.log(_width, _height, frameInfo, imgInfo, _offsetX, _offsetY);
-    let framImgEl = c.createImage();
-    console.log("framImgEl start", framImgEl);
-    framImgEl.onLoad = () => {
-      console.log("framImgEl", framImgEl);
+   
+    let frameImgEl = c.createImage();
+    frameImgEl.onload = () => {
+      console.log("frameImgEl", frameImgEl);
       i.drawImage(
-        framImgEl,
+        frameImgEl,
         0,
         0,
         _width,
         _height,
-        0,
-        0,
-        frameInfo.width,
-        frameInfo.height
       );
     };
-    framImgEl.onerror = (e) => {
-      console.log("framImgEl err", framImgEl, e);
-    }
-    framImgEl.src = frameInfo.path;
+    frameImgEl.src = frameInfo.path;
     let imgEl = c.createImage();
-    console.log("imgEl start", imgEl);
-    imgEl.onerror = (e) => {
-      console.log("imgEl err", imgEl, e);
-    }
-    imgEl.onLoad = () => {
+    imgEl.onload = () => {
       console.log("imgEl", imgEl);
       i.drawImage(
         imgEl,
         _offsetX,
         _offsetY,
-        imgInfo.width,
-        imgInfo.height
+        c.width - 20,
+        c.height - 20,
       );
     };
     imgEl.src = imgInfo.path;
@@ -268,7 +252,6 @@ Page({
       })
       .catch((err) => {
         console.log("getTemFile err", err);
-        this.getTemFile(options)
       });
   },
 });
