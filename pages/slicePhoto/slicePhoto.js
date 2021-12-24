@@ -206,7 +206,7 @@ Page({
     framImgEl.onLoad = () => {
       console.log("framImgEl", framImgEl);
       i.drawImage(
-        frameInfo.path,
+        framImgEl,
         0,
         0,
         _width,
@@ -219,10 +219,8 @@ Page({
     };
     framImgEl.onerror = (e) => {
       console.log("framImgEl err", framImgEl, e);
-
     }
     framImgEl.src = frameInfo.path;
-
     let imgEl = c.createImage();
     console.log("imgEl start", imgEl);
     imgEl.onerror = (e) => {
@@ -231,7 +229,7 @@ Page({
     imgEl.onLoad = () => {
       console.log("imgEl", imgEl);
       i.drawImage(
-        imgInfo.path,
+        imgEl,
         _offsetX,
         _offsetY,
         imgInfo.width,
@@ -252,46 +250,25 @@ Page({
     console.log("getTemFile 触发", options);
     let t = this;
     let c = this.canvasNode;
-    const url = c.toDataURL("image/png", 0.8)
-    console.log(url);
-    wx.getImageInfo({
-      src: url,
-    }).then(res => {
-      console.log(res);
-      wx.saveImageToPhotosAlbum({
-          filePath: res.path,
-        })
-        .then((_res) => {
-          wx.hideLoading()
-          console.log(" _res", _res);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        })
-    }).catch((e) => {
-      console.log("wx.getImageInfo err", e);
-    })
-
-
-    // wx.canvasToTempFilePath({
-    //     canvas: t.canvasNode,
-    //   })
-    //   .then((res) => {
-    //     console.log("getTemFile success", res);
-    //     wx.saveImageToPhotosAlbum({
-    //         filePath: res.tempFilePath,
-    //       })
-    //       .then((_res) => {
-    //         wx.hideLoading()
-    //         console.log(" _res", _res);
-    //       })
-    //       .catch((err) => {
-    //         console.log("err", err);
-    //       })
-    //   })
-    //   .catch((err) => {
-    //     console.log("getTemFile err", err);
-    //     this.getTemFile(options)
-    //   });
+    wx.canvasToTempFilePath({
+        canvas: t.canvasNode,
+      })
+      .then((res) => {
+        console.log("getTemFile success", res);
+        wx.saveImageToPhotosAlbum({
+            filePath: res.tempFilePath,
+          })
+          .then((_res) => {
+            wx.hideLoading()
+            console.log(" _res", _res);
+          })
+          .catch((err) => {
+            console.log("err", err);
+          })
+      })
+      .catch((err) => {
+        console.log("getTemFile err", err);
+        this.getTemFile(options)
+      });
   },
 });

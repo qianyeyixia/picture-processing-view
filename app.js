@@ -17,7 +17,7 @@ App({
     .catch(err => [err]);
  },
   async initGlobalData() {
-    const [error, userInfoData] = await this.to(wx.getStorage({key:"userInfo"})) ||
+    const [error, userInfoData] = await this.to(wx.getStorage({key:"userInfo"}))
     console.log("userInfoData", userInfoData);
 
     const hasUserInfo = userInfoData?.data?.openId ? true : false
