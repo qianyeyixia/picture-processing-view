@@ -161,9 +161,9 @@ Page({
                     formData:{openId:t.data.userInfo.openId},
                     success(res) {
                         console.log(res)
-                        let data = JSON.parse(res.data)
+                        let data = JSON.parse(res.data)                
                         t.setData({
-                            image1Src: 'data:image/png;base64,' + data.result,
+                            image1Src: data.result.picturePath,
                             isLoading: false
                         })
                         t.data.context.fillStyle = "white";

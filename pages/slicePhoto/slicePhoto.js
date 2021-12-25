@@ -133,12 +133,10 @@ Page({
         title: "保存中~",
       });
       const imgaeSrcInfo = this.data.imgObj;
-
       t.setData({
-        photoHeight: imgaeSrcInfo.height - 20,
-        photoWidth: imgaeSrcInfo.width - 20,
+        photoHeight: imgaeSrcInfo.height,
+        photoWidth: imgaeSrcInfo.width,
       })
-
       console.log("imgaeSrcInfo", imgaeSrcInfo);
       wx.downloadFile({
         url: t.data.frameSrc,
@@ -162,8 +160,8 @@ Page({
       }).then((frameInfo) => {
         console.log("frameInfo", frameInfo);
         t.setData({
-          photoWidth: imgaeSrcInfo.width - 20,
-          photoHeight: imgaeSrcInfo.height - 20,
+          photoWidth: imgaeSrcInfo.width,
+          photoHeight: imgaeSrcInfo.height,
           frameObj: frameInfo,
           BoxHeight: Math.max(imgaeSrcInfo.height, frameInfo.height),
         });
@@ -190,8 +188,8 @@ Page({
  
     let _width = Math.max(imgInfo.width, frameInfo.width);
     let _height = Math.max(imgInfo.height, frameInfo.height);
-    let _offsetX = Math.abs((_width - imgInfo.width - 20) / 2);
-    let _offsetY = Math.abs((_height - imgInfo.height - 20) / 2);
+    let _offsetX = Math.abs((_width - imgInfo.width) / 2);
+    let _offsetY = Math.abs((_height - imgInfo.height) / 2);
     console.log("_offsetX,_offsetY ", _offsetX, _offsetY);
     c.width = _width;
     c.height = _height;

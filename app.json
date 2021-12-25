@@ -1,9 +1,9 @@
 {
     "pages": [
-        "pages/slicePhoto/slicePhoto",
         "pages/index/index",
-        "pages/canvas/index",
         "pages/photo/photo",
+        "pages/slicePhoto/slicePhoto",
+        "pages/canvas/index",
         "pages/canvas/cropper"
     ],
     "window": {

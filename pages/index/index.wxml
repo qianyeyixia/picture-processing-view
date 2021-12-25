@@ -1,6 +1,5 @@
 <!--index.wxml-->
 <view>
-  <view class='margin-top'></view>
   <view class="cu-bar cu-bar-my data-v-d4d9d1f0">
     <view class="action sub-title data-v-d4d9d1f0">
       <text class="text-xl text-bold text-pure data-v-d4d9d1f0">头像美化</text>

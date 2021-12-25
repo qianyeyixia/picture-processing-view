@@ -38,7 +38,8 @@ Page({
   onLoad() {
     if (wx.getUserProfile) {
       this.setData({
-        canIUseGetUserProfile: true
+        canIUseGetUserProfile: true,
+        userInfo: app.globalData.userInfo
       })
       
     }

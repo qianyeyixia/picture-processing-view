@@ -6,8 +6,8 @@
         <text class="icon-save" bindtap="saveImgToPhone"></text>
     </view>
     <view class="header">
-        <!-- style="height: {{BoxHeight}}px;" -->
-        <view class="upload_img photoframe" >
+        <!--  -->
+        <view class="upload_img photoframe" style="height: {{BoxHeight}}px;">
             <image class="frame" mode="widthFix" src="{{frameSrc}}"></image>
             <!-- style="width:{{photoWidth}}px;height:{{photoHeight}}px" -->
             <image class="photo" src="{{imgSrc}}" disableScroll="true" ></image>
