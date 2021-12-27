@@ -6,6 +6,7 @@ Page({
    */
   canvasNode: null,
   ctx: null,
+  imgageMapList: new Map([]),
   data: {
     sysInfo: null,
     imgSrc: null,
@@ -21,7 +22,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log("onload", options, app.globalData)
     this.cropper = this.selectComponent("#image-cropper");
     if (app.globalData.imgSrc) {
       this.setData({
@@ -71,21 +71,17 @@ Page({
         this.canvasNode = res[0].node;
         this.ctx = this.canvasNode.getContext("2d");
         this.dpr = app.globalData.myDevice.pixelRatio;
-        this.canvasNode.width = this.data.dw ;
+        this.canvasNode.width = this.data.dw;
         this.canvasNode.height = this.data.dh
         this.ctx.scale(this.dpr, this.dpr);
       });
   },
   onShow() {
-    console.log("show", app.globalData.imgSrc)
     if (app.globalData.imgSrc) {
       this.setData({
         imgSrc: app.globalData.imgSrc
       })
     }
-  },
-  onHide() {
-    console.log("onhide")
   },
   chooseImage: function () {
     let t = this;
@@ -96,6 +92,20 @@ Page({
       sourceType: ["album", "camera"],
     }).then((res) => {
       console.log("chooseImage res", res, res.tempFilePaths[0]);
+      // 保存原始的图片
+      wx.getImageInfo({
+        src: res.tempFilePaths[0],
+        success: _res => {
+          this.imgageMapList.set("origin", {
+            ..._res,
+            imgSrc: res.tempFilePaths[0]
+          })
+          console.log(this.imgageMapList);
+        },
+        fail: err => {
+          console.log(err, "err")
+        }
+      })
       wx.uploadFile({
         filePath: res.tempFilePaths[0],
         name: "file",
@@ -116,7 +126,7 @@ Page({
           wx.hideLoading()
           app.globalData.imgaeSrc = _data.result.picturePath
           t.ctx.fillStyle = "white"
-          t.drawImage(_data.result.picturePath, 230 /3, 280/3)
+          t.drawImage(_data.result.picturePath, 230 / 3, 280 / 3)
         },
         fail: (res) => {
           console.log("fail res", res);
@@ -154,16 +164,6 @@ Page({
       console.log("err", r);
     }
   },
-  toCropper() {
-    wx.navigateTo({
-      url: `cropper?imgSrc=${this.data.imgSrc}`,
-    })
-  },
-  toSlice() {
-    wx.navigateTo({
-      url: `../slicePhoto/slicePhoto?imgSrc=${this.data.imgSrc}`,
-    })
-  },
   isSrcEmpty() {
     if (!this.data.imgSrc) {
       wx.showToast({
@@ -171,8 +171,7 @@ Page({
       })
     }
   },
-  changeColor(e) {
-    console.log(e);
+  changeColor(e) {  
     const color = e.target.dataset.color
     if (!this.data.imgSrc) {
       wx.showModal({
@@ -182,6 +181,24 @@ Page({
       return false
     }
     this.ctx.fillStyle = color
-    this.drawImage(this.data.imgSrc, 230 /3, 280/3)
+    this.drawImage(this.data.imgSrc, 230 / 3, 280 / 3)
+  },
+  getOriginImage(e) {
+    const color = e.target.dataset.color
+    let current = this.imgageMapList.get(color)
+    console.log(!current);
+    let _width = current?.width || 230,
+    _height = current?.height || 280;
+    this.ctx.fillRect(0, 0, _width * this.dpr, _height * this.dpr)
+    this.ctx.setFillStyle = "white"
+    if (!current) {
+      wx.showModal({
+        content: "没有上传图片,还原图片背景",
+        showCancel: false,
+      })
+      return false
+    } else {
+      this.drawImage(current?.imgSrc,_width, _height)
+    }
   }
 });

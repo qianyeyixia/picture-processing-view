@@ -3,19 +3,16 @@
     <view class="container">
         <view class="header">
             <canvas id="testCanvas" class="upload_img" type="2d" style="left: {{_left}}px;"></canvas>
-            <view wx:if="{{!imgSrc}}"  class="upload_img"  bindtap="chooseImage">
+            <!-- <view wx:if="{{!imgSrc}}"  class="upload_img"  bindtap="chooseImage">
                 上传图片
-            </view>
+            </view> -->
         </view>
         <view class="">
-            <button class="cu-btn" bindtap="toCropper">前往cropper页面</button> 
-            <button class="cu-btn" bindtap="toSlice">照片拼相框</button>
-            <view>
-                改变背景颜色
-                <button bindtap="changeColor" data-color="black">黑色</button>
-                <button bindtap="changeColor" data-color="red">红色</button>
-                <button bindtap="changeColor" data-color="blue">蓝色</button>
-            </view>
+            <button class="cu-btn" bindtap="chooseImage">选择/拍摄图片</button>
+            <button class="cu-btn" bindtap="getOriginImage" data-color="origin">还原图片背景</button>
+                <button  bindtap="changeColor" data-color="black">黑色</button>
+                <button   bindtap="changeColor" data-color="red">红色</button>
+                <button   bindtap="changeColor" data-color="blue">蓝色</button>
         </view>
     </view>
 
