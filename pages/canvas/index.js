@@ -1,5 +1,7 @@
 // pages/canvas/index.js
 const app = getApp();
+var getPhoteFrameList = require("../../utils/getPhoteFrame");
+
 Page({
   /**
    * 页面的初始数据
@@ -17,6 +19,11 @@ Page({
     _left: -9999999,
     imageList: [],
     currentImgResultObj: {},
+    currentColor: "white",
+    frameSrcs: [], // 图片相框
+    showFrameSrcs: false, // 展示相框
+    currentFrameObj: {},
+    frame_path: "http://www.shazhibin.top/frame_path"
   },
   /**
    * 生命周期函数--监听页面加载
@@ -28,6 +35,7 @@ Page({
         imgSrc: app.globalData.imgSrc
       })
     }
+    this.getFrameList()
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -71,8 +79,8 @@ Page({
         this.canvasNode = res[0].node;
         this.ctx = this.canvasNode.getContext("2d");
         this.dpr = app.globalData.myDevice.pixelRatio;
-        this.canvasNode.width = this.data.dw;
-        this.canvasNode.height = this.data.dh
+        this.canvasNode.width = this.data.dw * this.dpr;
+        this.canvasNode.height = this.data.dh* this.dpr
         this.ctx.scale(this.dpr, this.dpr);
       });
   },
@@ -104,6 +112,7 @@ Page({
         },
         fail: err => {
           console.log(err, "err")
+          wx.hideLoading()
         }
       })
       wx.uploadFile({
@@ -126,39 +135,54 @@ Page({
           wx.hideLoading()
           app.globalData.imgaeSrc = _data.result.picturePath
           t.ctx.fillStyle = "white"
-          t.drawImage(_data.result.picturePath, 230 / 3, 280 / 3)
+          let _width = 230,
+            _height = 280
+          if (t.data.currentFrameObj.path) {
+            console.log("t.data.currentFrameObj.path");
+            t.drawImage(t.data.currentFrameObj.path, _width, _height)
+            t.drawImage2(_data.result.picturePath, _width , _height,  10, 10, 10, 10)
+          } else {
+            t.drawImage(_data.result.picturePath, _width, _height)
+          }
         },
         fail: (res) => {
           console.log("fail res", res);
           wx.hideLoading()
         },
       });
-      // uploadTask.onProgressUpdate((res) => {
-      //   console.log("上传进度", res.progress);
-      //   if (res.progress == 100) {
-      //     wx.hideLoading()
-      //   }
-      //   console.log("已经上传的数据长度", res.totalBytesSent);
-      //   console.log("预期需要上传的数据总长度", res.totalBytesExpectedToSend);
-      // });
     });
   },
-  drawImage: function (imageSrc, width, height) {
+  drawImage: function (imageSrc, width, height, offectX = 0, offectY = 0) {
     console.log("drawImage ---", imageSrc, width, height);
     let canvas = this.canvasNode
     let ctx = this.ctx
-    // canvas.width = width
-    // canvas.height = height
-    // ctx.fillStyle = color
     let img = canvas.createImage();
-    // img.id = id;
     img.width = width;
     img.height = height;
     img.src = imageSrc;
     img.onload = function () {
       console.log("img onload");
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, 0, 0, width, height);
+      ctx.drawImage(img, offectX, offectY, width, height);
+    };
+    img.onerror = (r) => {
+      console.log("err", r);
+    }
+  },
+  drawImage2(imageSrc, width, height, offectX = 0, offectY = 0, dx = 0, dy = 0, dWidth, dHeight) {
+    let canvas = this.canvasNode
+    let ctx = this.ctx
+    let img = canvas.createImage();
+    img.width = width;
+    img.height = height;
+    img.src = imageSrc;
+    dWidth = dWidth ? dWidth : width
+    dHeight = dHeight ? dHeight : height
+    
+    img.onload = function () {
+      console.log("img onload");
+      // ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(img, offectX, offectY, width, height, dx, dy, dWidth, dHeight);
     };
     img.onerror = (r) => {
       console.log("err", r);
@@ -171,7 +195,7 @@ Page({
       })
     }
   },
-  changeColor(e) {  
+  changeColor(e) {
     const color = e.target.dataset.color
     if (!this.data.imgSrc) {
       wx.showModal({
@@ -180,6 +204,9 @@ Page({
       })
       return false
     }
+    this.setData({
+      currentColor: color
+    })
     this.ctx.fillStyle = color
     this.drawImage(this.data.imgSrc, 230 / 3, 280 / 3)
   },
@@ -188,7 +215,7 @@ Page({
     let current = this.imgageMapList.get(color)
     console.log(!current);
     let _width = current?.width || 230,
-    _height = current?.height || 280;
+      _height = current?.height || 280;
     this.ctx.fillRect(0, 0, _width * this.dpr, _height * this.dpr)
     this.ctx.setFillStyle = "white"
     if (!current) {
@@ -198,7 +225,46 @@ Page({
       })
       return false
     } else {
-      this.drawImage(current?.imgSrc,_width, _height)
+      this.drawImage(current?.imgSrc, _width, _height)
     }
+  },
+  getFrameList() {
+    let t = this
+    getPhoteFrameList(this, app).then(res => {
+      const {
+        data
+      } = res;
+      t.setData({
+        frame_path: data.result,
+        frameSrcs: data.resultList,
+      });
+    }).catch(err => {
+      console.log(err)
+    })
+  },
+  toggleFrame() {
+    this.setData({
+      showFrameSrcs: !this.data.showFrameSrcs
+    })
+  },
+  // 选择相框
+  chooseFrame(e) {
+    console.log(e.currentTarget.dataset.src);
+    wx.getImageInfo({
+      src: e.currentTarget.dataset.src,
+    }).then(res => {
+      console.log(res);
+      this.setData({
+        currentFrameObj: res,
+        _left: (this.data.sysInfo.windowWidth - 230) / 2,
+      })
+      this.ctx.fillStyle = this.data.currentColor
+      this.drawImage(this.data.currentFrameObj.path, 230, 280)
+    }).catch(() => {
+      wx.hideLoading()
+    })
+  },
+  touchStart(e) {
+    console.log(e);
   }
 });

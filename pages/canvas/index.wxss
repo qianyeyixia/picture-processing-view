@@ -17,3 +17,24 @@
 	border: 1rpx solid #f333f3;
 	position: absolute;
 }
+
+
+.swiper-content {
+    width: 100%;
+    height: 120rpx;
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: #ffffff;
+    padding: 20rpx 0;
+}
+
+.frameBox {
+    width: 120rpx;
+    height: 80rpx;
+    display: inline-block;
+    margin-right: 20rpx;
+}
+.frameBox .frameBox-image {
+    width: 100%;
+    height: 100%;
+}
