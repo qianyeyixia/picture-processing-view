@@ -178,7 +178,7 @@ Page({
     img.src = imageSrc;
     dWidth = dWidth ? dWidth : width
     dHeight = dHeight ? dHeight : height
-    
+
     img.onload = function () {
       console.log("img onload");
       // ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -266,5 +266,8 @@ Page({
   },
   touchStart(e) {
     console.log(e);
+    if(this.data.currentFrameObj.path) {
+      this.drawImage(this.data.currentFrameObj.path, 230, 280)
+    }
   }
 });
