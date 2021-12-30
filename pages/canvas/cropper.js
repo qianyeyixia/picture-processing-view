@@ -6,7 +6,7 @@ Page({
 	 * 页面的初始数据
 	 */
 	data: {
-		imgSrc: "../../images/frame/frame11.png",
+		imgSrc: "",
 		width: 250, //宽度
 		height: 250, //高度
 		max_width: 300,
@@ -33,8 +33,6 @@ Page({
 				imgSrc: app.globalData.imgaeSrc
 			})
 		}
-
-	
 	},
 	clickcut(e) {
 		console.log(e.detail);
@@ -72,10 +70,17 @@ Page({
 						console.log("success", fileRes);
 						let _data = JSON.parse(fileRes.data);
 						that.setData({
-							imgSrc: `data:image/png;base64,${_data.result}`,
+							imgSrc: _data.result.picturePath,
 						});
-						app.globalData.imgaeSrc.orgin = that.data.imgSrc
-						app.globalData.imgaeSrc.BufferURL = wx.createBufferURL(wx.base64ToArrayBuffer(_data.result))
+						wx.getImageInfo({
+						  src:  _data.result.picturePath,
+						}).then(_res => {
+
+						})
+
+
+						console.log(that.data);
+						app.globalData.imgaeSrc = _data.result.picturePath
 					},
 					fail: (res) => {
 						console.log("fail res", res);
@@ -167,7 +172,7 @@ Page({
 			console.log("obje", obj)
 			app.globalData.imgSrc = obj.url;
 			wx.navigateTo({
-			  url: `../canvas/index?imgSrc=${obj.url}`,
+			  url: `../photo/photo?imgSrc=${obj.url}`,
 			})
 		});
 	},

@@ -32,8 +32,16 @@ Page({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad: function (options) {
-
+    onLoad: function (c) {
+        console.log(c);
+        if(c.imgSrc && c.imgSrc  != "null" && c.imgSrc != "undefined") {
+            this.setData({
+                image1Src: c.imgSrc
+            })
+            setTimeout(() => {
+                this.drawImage()
+            }, 500)
+        }
     },
 
     /**
@@ -143,35 +151,39 @@ Page({
             })
             return
         }
-        let t = this
-        wx.chooseImage({
-            count: 1,
-            sizeType: ['original', 'compressed'],
-            sourceType: ['album', 'camera'],
-            success(res) {
-                t.setData({
-                    isLoading: true
-                })
-                // tempFilePath可以作为img标签的src属性显示图片
-                const tempFilePaths = res.tempFilePaths
-                wx.uploadFile({
-                    url: t.data.baseUri+'/wx/photo/getForeground',
-                    filePath: tempFilePaths[0],
-                    name: 'file',
-                    formData:{openId:t.data.userInfo.openId},
-                    success(res) {
-                        console.log(res)
-                        let data = JSON.parse(res.data)                
-                        t.setData({
-                            image1Src: data.result.picturePath,
-                            isLoading: false
-                        })
-                        t.data.context.fillStyle = "white";
-                        t.drawImage();
-                    }
-                })
-            }
+        wx.navigateTo({
+          url: '../canvas/cropper',
         })
+
+        // let t = this
+        // wx.chooseImage({
+        //     count: 1,
+        //     sizeType: ['original', 'compressed'],
+        //     sourceType: ['album', 'camera'],
+        //     success(res) {
+        //         t.setData({
+        //             isLoading: true
+        //         })
+        //         // tempFilePath可以作为img标签的src属性显示图片
+        //         const tempFilePaths = res.tempFilePaths
+        //         wx.uploadFile({
+        //             url: t.data.baseUri+'/wx/photo/getForeground',
+        //             filePath: tempFilePaths[0],
+        //             name: 'file',
+        //             formData:{openId:t.data.userInfo.openId},
+        //             success(res) {
+        //                 console.log(res)
+        //                 let data = JSON.parse(res.data)                
+        //                 t.setData({
+        //                     image1Src: data.result.picturePath,
+        //                     isLoading: false
+        //                 })
+        //                 t.data.context.fillStyle = "white";
+        //                 t.drawImage();
+        //             }
+        //         })
+        //     }
+        // })
     },
     bthClick: function (event) {
         let context = this.data.context;
@@ -180,11 +192,11 @@ Page({
     },
     drawImage: function () {
         let data = this.data
+        console.log("data", data);
         let canvas = data.canvas;
         let context = data.context;
         // 创建一个图片 
         const image = canvas.createImage()
-        image.src = data.image1Src // 要加载的图片 url
         image.width = data.dw
         image.height = data.dh
         image.onload = function () {
@@ -192,6 +204,7 @@ Page({
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.drawImage(image, data.x, data.y, data.dw, data.dh);
         }
+        image.src = data.image1Src // 要加载的图片 url
         image.onerror = function () {
             console.log("图片加载失败")
         }

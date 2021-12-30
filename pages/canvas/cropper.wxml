@@ -26,5 +26,5 @@
     </button>
     <button class="cu-btn" size="mini" catchtouchstart='narrow' catchtouchend='end' data-type="narrow">缩小</button>
     <button class="cu-btn" size="mini" catchtouchstart='rotate' catchtouchend='end' data-type="rotate">旋转</button>
-    <button class="cu-btn" size="mini" catchtap='upload'>上传</button>
+    <!-- <button class="cu-btn" size="mini" catchtap='upload'>上传</button> -->
 </view>
