@@ -25,7 +25,6 @@ Page({
     openId: "",
     userInfo: null,
     baseUri: "http://www.shazhibin.top/service",
-    //baseUri:'http://localhost:8081/service',
     hasUserInfo: false,
   },
 
@@ -122,36 +121,6 @@ Page({
     wx.navigateTo({
       url: "../canvas/cropper",
     });
-
-    // let t = this
-    // wx.chooseImage({
-    //     count: 1,
-    //     sizeType: ['original', 'compressed'],
-    //     sourceType: ['album', 'camera'],
-    //     success(res) {
-    //         t.setData({
-    //             isLoading: true
-    //         })
-    //         // tempFilePath可以作为img标签的src属性显示图片
-    //         const tempFilePaths = res.tempFilePaths
-    //         wx.uploadFile({
-    //             url: t.data.baseUri+'/wx/photo/getForeground',
-    //             filePath: tempFilePaths[0],
-    //             name: 'file',
-    //             formData:{openId:t.data.userInfo.openId},
-    //             success(res) {
-    //                 console.log(res)
-    //                 let data = JSON.parse(res.data)
-    //                 t.setData({
-    //                     image1Src: data.result.picturePath,
-    //                     isLoading: false
-    //                 })
-    //                 t.data.context.fillStyle = "white";
-    //                 t.drawImage();
-    //             }
-    //         })
-    //     }
-    // })
   },
   bthClick: function (event) {
     let context = this.data.context;

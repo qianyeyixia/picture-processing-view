@@ -1,7 +1,7 @@
 <view class="container">
-    <canvas id="canvas1" type="2d"></canvas>
+    <canvas id="canvas1" type="2d" disable-scroll="{{ true }}"></canvas>
     <button type="default" size="{{defaultSize}}" bindtap="choosePhoto" hover-class="other-button-hover"
-        loading="{{isLoading}}"> 选择/拍摄图片
+        loading="{{isLoading}}" style="width: 280rpx; height: 64rpx; display: inline-block; box-sizing: border-box; left: 0rpx; top: 0rpx"> 选择/拍摄图片
     </button>
     <view class="button-sp-area">
         <button type="default" size="{{defaultSize}}" bindtap="bthClick" data-color="red" class="mini-btn">红</button>
