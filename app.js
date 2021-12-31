@@ -6,7 +6,7 @@ App({
     // 展示本地存储能力
     this.initGlobalData()
 
-    wxLogin.getUserInfo(this)
+    // wxLogin.getUserInfo(this)
     // 登录
     // wx.login({
     //   success: res => {
@@ -31,6 +31,11 @@ App({
       imgaeSrc: undefined,
       hasUserInfo,
       myDevice: wx.getSystemInfoSync()
+    }
+
+    console.log("app",this.globalData);
+    if(!hasUserInfo) {
+      wxLogin.getUserInfo(this)
     }
   },
   globalData: {

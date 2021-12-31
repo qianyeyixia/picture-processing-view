@@ -19,8 +19,20 @@ async function getUserInfo(app) {
           key: "userInfo",
           data: app.globalData.userInfo
         })
-
+        let userInfo = {
+          ...app.globalData.userInfo,
+        }
         resolve(_res)
+        wx.request({
+          url: app.globalData.baseUrl + '/wx/save',
+          data: {
+            openId: app.globalData.userInfo.openId
+          },
+          method: 'POST',
+          success: (_r => {
+            console.log("save _r", _r);
+          })
+        })
       },
       error: (error) => {
         console.log("getUserInfo error")
