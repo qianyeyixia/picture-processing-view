@@ -21,6 +21,6 @@
             bindtouchend="BtnEndChangePhoto">放大</button>
         <button type="default" size="{{defaultSize}}" data-a="-1" class="mini-btn" bindtouchstart="btnStartChangePhoto"
             bindtouchend="BtnEndChangePhoto">缩小</button>
-            <button type="default" bindtap="saveImage">保存图片</button>
+            <button type="default" bindtap="saveImage"  loading="{{isLoading}}">保存图片</button>
     </view>
 </view>

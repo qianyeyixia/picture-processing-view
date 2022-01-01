@@ -243,17 +243,13 @@ Page({
     t.drawImage()
   },
   saveImage() {
+    let t = this
     this.setData({
       isLoading:true
     })
     wx.canvasToTempFilePath({
       canvas:this.data.canvas,
-      width: this.data.canvas.width,
-      height:this.data.canvas.height,
-      // destWidth:this.data.canvas.width* this.data.sysInfo.devicePixelRatio,
-      // destHeight:this.data.canvas.height* this.data.sysInfo.devicePixelRatio,
     }).then(res => {
-      console.log(res);
       wx.uploadFile({
         url: `${app.globalData.baseUrl}/wx/photo/uploadFile`,
         filePath:res.tempFilePath,
@@ -262,12 +258,22 @@ Page({
           openId: app.globalData.userInfo.openId,
         },
         success:(_res) => {
-          console.log(_res);
           const data = _res.data
           let {result} = JSON.parse(data)
           wx.showModal({
             showCancel:false,
             content: `请及时保存图片ID为${result.id}联系客服`
+          })
+        },
+        fail: err => {
+          wx.showModal({
+            showCancel:false,
+            content: "上传失败,请稍候重试"
+          })
+        },
+        complete: ()=> {
+          t.setData({
+            isLoading:false
           })
         }
       })
