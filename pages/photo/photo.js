@@ -13,8 +13,10 @@ Page({
     plain: false,
     loading: false,
     image1Src: "",
+    originImgSrc: "",
     canvas: null,
     context: null,
+    sysInfo:null,
     x: 0,
     y: 0,
     dw: 100,
@@ -47,6 +49,10 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
+    console.log("app", app);
+    this.setData({
+      sysInfo: app.globalData.myDevice
+    })
     const query = wx.createSelectorQuery().in(this);
     query
       .select("#canvas1")
@@ -64,7 +70,7 @@ Page({
           context: ctx,
         });
       });
-    
+
   },
 
   /**
@@ -97,22 +103,31 @@ Page({
    */
   onShareAppMessage: function () {},
   choosePhoto: function (event) {
+    console.log(app.globalData);
     if (!app.globalData.hasUserInfo) {
       wx.getUserProfile({
         desc: "完善信息",
         lang: "zh_CN",
         success: (res) => {
-          let openId = this.data.userInfo.openId;
+          console.log("getUserProfile", res);
+          app.globalData.userInfo = {
+            ...res,
+            ...res.userInfo
+          }
+          app.globalData.hasUserInfo = true
           this.setData({
             userInfo: res.userInfo,
-            "userInfo.openId": openId,
+            "userInfo.openId": app.globalData.userInfo.openId,
             hasUserInfo: true,
           });
+          wx.setStorage({
+            key: "userInfo",
+            data: app.globalData.userInfo
+          })
           wx.request({
             url: this.data.baseUri + "/wx/save",
             data: this.data.userInfo,
             method: "POST",
-            success: (res) => {},
           });
         },
       });
@@ -128,6 +143,10 @@ Page({
     this.drawImage();
   },
   drawImage: function () {
+    this.setData({
+      isLoading:true
+    })
+    let t = this;
     let data = this.data;
     console.log("data", data);
     let canvas = data.canvas;
@@ -140,10 +159,16 @@ Page({
       console.log("图片加载完成");
       context.fillRect(0, 0, canvas.width, canvas.height);
       context.drawImage(image, data.x, data.y, data.dw, data.dh);
+      t.setData({
+        isLoading:false
+      })
     };
     image.src = data.image1Src; // 要加载的图片 url
     image.onerror = function () {
       console.log("图片加载失败");
+      t.setData({
+        isLoading:false
+      })
     };
   },
   btnStartMovePhoto: function (event) {
@@ -185,4 +210,73 @@ Page({
   BtnEndChangePhoto: function () {
     clearInterval(this.data.chgTid);
   },
+  removeBg() {
+    let t = this;
+    wx.uploadFile({
+      filePath: t.data.image1Src,
+      name: 'file',
+      url: `${app.globalData.baseUrl}/wx/photo/getForeground`,
+      formData: {
+        openId: app.globalData.userInfo.openId,
+      },
+      success: (res) => {
+        let _data = JSON.parse(res.data);
+        console.log(_data);
+        let originImgSrc = t.data.image1Src
+        t.setData({
+          image1Src: _data.result.picturePath,
+          originImgSrc: originImgSrc
+        });
+        t.drawImage()
+      },
+      fail: (err) => {
+        console.log(err);
+      }
+    })
+  },
+  setImgBg() {
+    let t = this;
+    t.setData({
+      image1Src: t.data.originImgSrc,
+      originImgSrc: ""
+    })
+    t.drawImage()
+  },
+  saveImage() {
+    this.setData({
+      isLoading:true
+    })
+    wx.canvasToTempFilePath({
+      canvas:this.data.canvas,
+      width: this.data.canvas.width,
+      height:this.data.canvas.height,
+      // destWidth:this.data.canvas.width* this.data.sysInfo.devicePixelRatio,
+      // destHeight:this.data.canvas.height* this.data.sysInfo.devicePixelRatio,
+    }).then(res => {
+      console.log(res);
+      wx.uploadFile({
+        url: `${app.globalData.baseUrl}/wx/photo/uploadFile`,
+        filePath:res.tempFilePath,
+        name: 'file',
+        formData: {
+          openId: app.globalData.userInfo.openId,
+        },
+        success:(_res) => {
+          console.log(_res);
+          const data = _res.data
+          let {result} = JSON.parse(data)
+          wx.showModal({
+            showCancel:false,
+            content: `请及时保存图片ID为${result.id}联系客服`
+          })
+        }
+      })
+    }).catch(err => {
+      console.log("err",err);
+      wx.showModal({
+        showCancel:false,
+        content: "上传失败,请稍候重试"
+      })
+    })
+  }
 });

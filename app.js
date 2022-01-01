@@ -23,8 +23,7 @@ App({
   async initGlobalData() {
     const [error, userInfoData] = await this.to(wx.getStorage({key:"userInfo"}))
     console.log("userInfoData", userInfoData);
-
-    const hasUserInfo = userInfoData?.data?.openId ? true : false
+    const hasUserInfo = userInfoData?.data?.openId &&  userInfoData?.data?.nickName  ? true : false
     this.globalData = {
       userInfo: userInfoData?.data || null,
       baseUrl: "http://www.shazhibin.top/service",
@@ -32,7 +31,6 @@ App({
       hasUserInfo,
       myDevice: wx.getSystemInfoSync()
     }
-
     console.log("app",this.globalData);
     if(!hasUserInfo) {
       wxLogin.getUserInfo(this)

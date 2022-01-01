@@ -1,7 +1,7 @@
 {
     "pages": [
-        "pages/canvas/index",
         "pages/photo/photo",
+        "pages/canvas/index",
         "pages/index/index",
         "pages/slicePhoto/slicePhoto",
         "pages/canvas/cropper"
