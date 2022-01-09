@@ -1,7 +1,6 @@
 <!--pages/canvas/cropper.wxml-->
 <view style="width:100%;height:500rpx;">
-    <image-cropper id="image-cropper" limit_move="{{limit_move}}" disable_rotate="{{true}}" width="{{width}}"
-        height="{{height}}" imgSrc="{{imgSrc}}" bindload="cropperload" bindimageload="loadimage" bindtapcut="clickcut">
+    <image-cropper id="image-cropper" limit_move="{{limit_move}}" disable_rotate="{{true}}" width="{{width}}" height="{{height}}" imgSrc="{{imgSrc}}" bindload="cropperload" bindimageload="loadimage" bindtapcut="clickcut">
     </image-cropper>
 </view>
 <view class='bottom'>
@@ -9,22 +8,22 @@
     <!-- <switch checked='{{disable_width?true:false}}' bindchange="switchChangeDisableWidth" /> -->
     <!-- <text style='color:white;margin-right:5rpx;'>锁定裁剪框高</text> -->
     <!-- <switch checked='{{disable_height?true:false}}' bindchange="switchChangeDisableHeight" /> -->
-    <button class="cu-btn" size="mini" bindtap='submit'>确定</button>
+    <button size="mini" bindtap='submit'>确定</button>
     <!-- <button class="cu-btn" size="mini" bindtap='clickcut'>裁剪</button> -->
     <!-- <text style='color:white;margin-right:5rpx;'>锁定比例</text> -->
     <!-- <switch checked='{{disable_ratio?true:false}}' bindchange="switchChangeDisableRatio" /> -->
     <!-- <text style='color:white;margin-right:5rpx;'>锁定旋转</text> -->
-    <!-- <switch checked='{{disable_rotate?true:false}}' bindchange="switchChangeDisableRotate" /> -->
+    <!-- <switch checked='{{disable_rotate?tr ue:false}}' bindchange="switchChangeDisableRotate" /> -->
     <!-- <text style='color:white;margin-right:5rpx;'>限制移动</text> -->
     <!-- <switch checked='{{limit_move?true:false}}' bindchange="switchChangeLimitMove" /> -->
-    <button class="cu-btn" size="mini" catchtouchstart='top' catchtouchend='end' data-type="top">上</button>
-    <button class="cu-btn" size="mini" catchtouchstart='bottom' catchtouchend='end' data-type="bottom">下</button>
-    <button class="cu-btn" size="mini" catchtouchstart='left' catchtouchend='end' data-type="left">左</button>
-    <button class="cu-btn" size="mini" catchtouchstart='right' catchtouchend='end' data-type="right">右</button>
-    <button class="cu-btn" size="mini" catchtouchstart='enlarge' catchtouchend='end' data-type="enlarge">
+    <button size="mini" catchtouchstart='top' catchtouchend='end' data-type="top">上</button>
+    <button size="mini" catchtouchstart='bottom' catchtouchend='end' data-type="bottom">下</button>
+    <button size="mini" catchtouchstart='left' catchtouchend='end' data-type="left">左</button>
+    <button size="mini" catchtouchstart='right' catchtouchend='end' data-type="right">右</button>
+    <button size="mini" catchtouchstart='enlarge' catchtouchend='end' data-type="enlarge">
         <text class="cuIcon-add lg"></text>
     </button>
-    <button class="cu-btn" size="mini" catchtouchstart='narrow' catchtouchend='end' data-type="narrow">缩小</button>
-    <button class="cu-btn" size="mini" catchtouchstart='rotate' catchtouchend='end' data-type="rotate">旋转</button>
+    <button size="mini" catchtouchstart='narrow' catchtouchend='end' data-type="narrow">缩小</button>
+    <button size="mini" catchtouchstart='rotate' catchtouchend='end' data-type="rotate">旋转</button>
     <!-- <button class="cu-btn" size="mini" catchtap='upload'>上传</button> -->
 </view>

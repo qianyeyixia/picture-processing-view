@@ -9,7 +9,6 @@
     color: white;
     justify-content: space-around;
 }
-
 .bottom {
     position: absolute;
     width: 100%;
@@ -18,5 +17,5 @@
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    bottom: 20rpx;
+    bottom: 50px;
 }
