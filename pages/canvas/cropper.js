@@ -172,7 +172,7 @@ Page({
 			console.log("obje", obj)
 			app.globalData.imgSrc = obj.url;
 			wx.navigateTo({
-			  url: `../photo/photo?imgSrc=${obj.url}`,
+			  url: `../canvas/index?imgSrc=${obj.url}`,
 			})
 		});
 	},

@@ -5,6 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    ...app.globalData,
     defaultSize: "mini",
     primarySize: "default",
     warnSize: "default",
@@ -19,15 +20,12 @@ Page({
     sysInfo:null,
     x: 0,
     y: 0,
-    dw: 100,
-    dh: 100,
+    dw: 230,
+    dh: 280,
     image1: null,
     mvTid: null,
     chgTid: null,
     openId: "",
-    userInfo: null,
-    baseUri: "http://www.shazhibin.top/service",
-    hasUserInfo: false,
   },
 
   /**
@@ -70,38 +68,12 @@ Page({
           context: ctx,
         });
       });
-
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {},
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {},
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {},
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {},
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {},
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {},
   choosePhoto: function (event) {
     console.log(app.globalData);
     if (!app.globalData.hasUserInfo) {
@@ -111,7 +83,7 @@ Page({
         success: (res) => {
           console.log("getUserProfile", res);
           app.globalData.userInfo = {
-            ...res,
+            ... app.globalData.userInfo,
             ...res.userInfo
           }
           app.globalData.hasUserInfo = true
@@ -125,9 +97,14 @@ Page({
             data: app.globalData.userInfo
           })
           wx.request({
-            url: this.data.baseUri + "/wx/save",
-            data: this.data.userInfo,
+            url: app.globalData.baseUrl + "/wx/save",
+            data: app.globalData.userInfo,
             method: "POST",
+            success: _r => {
+              wx.navigateTo({
+                url: "../canvas/cropper",
+              });
+            }
           });
         },
       });

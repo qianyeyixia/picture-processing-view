@@ -1,24 +1,25 @@
 // pages/canvas/index.js
 const app = getApp();
 var getPhoteFrameList = require("../../utils/getPhoteFrame");
-
+var WXlogin = require("../../utils/login")
 Page({
   /**
    * 页面的初始数据
    */
-  canvasNode: null,
-  ctx: null,
   imgageMapList: new Map([]),
   data: {
+    canvasNode: null,
+    ctx: null,
+    dpr: 1,
     sysInfo: null,
     imgSrc: null,
     dw: 230, //宽度
     dh: 280, //高度
-    limit_move: false,
-    show_cropper: false,
     _left: -9999999,
     imageList: [],
     currentImgResultObj: {},
+    currentImageBgBool: false,
+    isLoading: false,
     currentColor: "white",
     frameSrcs: [], // 图片相框
     showFrameSrcs: false, // 展示相框
@@ -28,46 +29,17 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.cropper = this.selectComponent("#image-cropper");
-    if (app.globalData.imgSrc) {
-      this.setData({
-        imgSrc: app.globalData.imgSrc
-      })
-    }
+  onLoad: function () {
     this.getFrameList()
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
-    console.log("app", app);
+  onReady(c) {
+    console.log("c", 45, c, app.globalData);
     this.setData({
       sysInfo: app.globalData.myDevice
     })
-    if (!app.globalData.userInfo) {
-      wx.login({
-        timeout: 5000,
-      }).then((res) => {
-        console.log("wx.login", res)
-        wx.request({
-          url: `${app.globalData.baseUrl}/wx/login`,
-          data: {
-            code: res.code,
-          },
-          success: (res) => {
-            console.log(res);
-            app.globalData.userInfo = {
-              ...res.data.result,
-            };
-            console.log(app.globalData);
-          },
-        });
-      }).error(e => {
-        console.error();
-      })
-    }
-
     const query = wx.createSelectorQuery().in(this);
     query
       .select("#testCanvas")
@@ -76,116 +48,112 @@ Page({
         size: true,
       })
       .exec((res) => {
-        this.canvasNode = res[0].node;
-        this.ctx = this.canvasNode.getContext("2d");
-        this.dpr = app.globalData.myDevice.pixelRatio;
-        this.canvasNode.width = this.data.dw * this.dpr;
-        this.canvasNode.height = this.data.dh* this.dpr
-        this.ctx.scale(this.dpr, this.dpr);
+        let canvasNode = res[0].node;
+        let ctx = canvasNode.getContext("2d");
+        let dpr = app.globalData.myDevice.pixelRatio;
+        canvasNode.width = this.data.dw * dpr;
+        canvasNode.height = this.data.dh * dpr
+        this.setData({
+          canvasNode,
+          ctx,
+          dpr,
+        })
+        this.data.ctx.scale(this.dpr, this.dpr);
+        if (app.globalData.imgSrc) {
+          this.setData({
+            _left: (this.data.sysInfo.windowWidth - 230) / 2,
+            imgSrc: app.globalData.imgSrc
+          })
+          wx.getImageInfo({
+            src: app.globalData.imgSrc,
+          }).then(_r => {
+            console.log(76, _r);
+            this.drawImage(this.data.imgSrc, 230 * dpr, 280 * dpr)
+          })
+        }
       });
-  },
-  onShow() {
-    if (app.globalData.imgSrc) {
-      this.setData({
-        imgSrc: app.globalData.imgSrc
-      })
-    }
   },
   chooseImage: function () {
-    let t = this;
-    wx.showLoading()
-    wx.chooseImage({
-      count: 1,
-      sizeType: ["original", "compressed"],
-      sourceType: ["album", "camera"],
-    }).then((res) => {
-      console.log("chooseImage res", res, res.tempFilePaths[0]);
-      // 保存原始的图片
-      wx.getImageInfo({
-        src: res.tempFilePaths[0],
-        success: _res => {
-          this.imgageMapList.set("origin", {
-            ..._res,
-            imgSrc: res.tempFilePaths[0]
-          })
-          console.log(this.imgageMapList);
-        },
-        fail: err => {
-          console.log(err, "err")
-          wx.hideLoading()
-        }
-      })
-      wx.uploadFile({
-        filePath: res.tempFilePaths[0],
-        name: "file",
-        url: `${app.globalData.baseUrl}/wx/photo/getForeground`,
-        formData: {
-          openId: app.globalData.userInfo.openId,
-        },
-        success: (fileRes) => {
-          console.log("uploadFile success", fileRes, JSON.parse(fileRes.data));
-          let _data = JSON.parse(fileRes.data);
-          t.data.imageList.push(_data.result)
-          t.setData({
-            imgSrc: _data.result.picturePath,
-            _left: (t.data.sysInfo.windowWidth - 230) / 2,
-            currentImgResultObj: _data.result,
-            imageList: t.data.imageList
-          });
-          wx.hideLoading()
-          app.globalData.imgaeSrc = _data.result.picturePath
-          t.ctx.fillStyle = "white"
-          let _width = 230,
-            _height = 280
-          if (t.data.currentFrameObj.path) {
-            console.log("t.data.currentFrameObj.path");
-            t.drawImage(t.data.currentFrameObj.path, _width, _height)
-            t.drawImage2(_data.result.picturePath, _width , _height,  10, 10, 10, 10)
-          } else {
-            t.drawImage(_data.result.picturePath, _width, _height)
+    if (!app.globalData.hasUserInfo) {
+      wx.getUserProfile({
+        desc: "重新授权",
+        lang: "zh_CN",
+        success: (res) => {
+          console.log("getUserProfile", res);
+          app.globalData.userInfo = {
+            ...app.globalData.userInfo,
+            ...res.userInfo
           }
-        },
-        fail: (res) => {
-          console.log("fail res", res);
-          wx.hideLoading()
+          WXlogin.getUserInfo(app).then(_r => {
+            wx.navigateTo({
+              url: "../canvas/cropper",
+            });
+          })
         },
       });
+      return;
+    }
+    wx.navigateTo({
+      url: "../canvas/cropper",
     });
   },
-  drawImage: function (imageSrc, width, height, offectX = 0, offectY = 0) {
-    console.log("drawImage ---", imageSrc, width, height);
-    let canvas = this.canvasNode
-    let ctx = this.ctx
-    let img = canvas.createImage();
+  drawImage(imageSrc, width, height, offectX = 0, offectY = 0, reset = true) {
+    let {
+      canvasNode,
+      ctx
+    } = this.data
+    let t = this
+    this.setData({
+      isLoading:true
+    })
+    let img = canvasNode.createImage();
     img.width = width;
     img.height = height;
     img.src = imageSrc;
     img.onload = function () {
       console.log("img onload");
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      if(reset) {
+        ctx.fillRect(0, 0, canvasNode.width, canvasNode.height)
+      }
       ctx.drawImage(img, offectX, offectY, width, height);
+      t.setData({
+        isLoading:false
+      })
     };
     img.onerror = (r) => {
       console.log("err", r);
+      t.setData({
+        isLoading:false
+      })
     }
   },
   drawImage2(imageSrc, width, height, offectX = 0, offectY = 0, dx = 0, dy = 0, dWidth, dHeight) {
-    let canvas = this.canvasNode
-    let ctx = this.ctx
-    let img = canvas.createImage();
+    let {
+      canvasNode,
+      ctx
+    } = this.data
+    let t = this
+    t.setData({
+      isLoading:true
+    })
+    let img = canvasNode.createImage();
     img.width = width;
     img.height = height;
     img.src = imageSrc;
     dWidth = dWidth ? dWidth : width
     dHeight = dHeight ? dHeight : height
-
     img.onload = function () {
       console.log("img onload");
-      // ctx.fillRect(0, 0, canvas.width, canvas.height)
       ctx.drawImage(img, offectX, offectY, width, height, dx, dy, dWidth, dHeight);
+      t.setData({
+        isLoading:false
+      })
     };
     img.onerror = (r) => {
       console.log("err", r);
+      t.setData({
+        isLoading:false
+      })
     }
   },
   isSrcEmpty() {
@@ -196,6 +164,7 @@ Page({
     }
   },
   changeColor(e) {
+    let {ctx, dpr} = this.data
     const color = e.target.dataset.color
     if (!this.data.imgSrc) {
       wx.showModal({
@@ -207,17 +176,18 @@ Page({
     this.setData({
       currentColor: color
     })
-    this.ctx.fillStyle = color
-    this.drawImage(this.data.imgSrc, 230 / 3, 280 / 3)
+    ctx.fillStyle = color
+    this.drawImage(this.data.imgSrc, 230*dpr　, 280* dpr)
   },
   getOriginImage(e) {
+    let {ctx, dpr} = this.data
     const color = e.target.dataset.color
     let current = this.imgageMapList.get(color)
     console.log(!current);
     let _width = current?.width || 230,
       _height = current?.height || 280;
-    this.ctx.fillRect(0, 0, _width * this.dpr, _height * this.dpr)
-    this.ctx.setFillStyle = "white"
+    ctx.fillRect(0, 0, _width * dpr, _height * dpr)
+    ctx.setFillStyle = "white"
     if (!current) {
       wx.showModal({
         content: "没有上传图片,还原图片背景",
@@ -225,8 +195,52 @@ Page({
       })
       return false
     } else {
-      this.drawImage(current?.imgSrc, _width, _height)
+      this.drawImage(current?.imgSrc, _width * dpr, _height  * dpr)
     }
+  },
+  removeImageBg(e) {
+    const color = e.target.dataset.color;
+    this.setData({
+      isLoading: true
+    })
+    if (!this.data.imgSrc) {
+      return wx.showModal({
+        content: "没有上传图片,请上传图片后重试",
+        showCancel: false,
+      })
+    }
+    wx.uploadFile({
+      filePath: this.data.imgSrc,
+      name: 'file',
+      url: `${app.globalData.baseUrl}/wx/photo/getForeground`,
+      formData: {
+        openId: app.globalData.userInfo.openId,
+      },
+      success: (res) => {
+        let _data = JSON.parse(res.data);
+        this.imgageMapList.set("origin", {
+          imgSrc: this.data.imgSrc,
+          width: 230,
+          height: 280
+        })
+        this.imgageMapList.set(color, {
+          imgSrc: _data.result.picturePath,
+          width: 230,
+          height: 280
+        })
+        this.setData({
+          imgSrc: _data.result.picturePath,
+          currentImageBgBool:true
+        })
+        this.drawImage(this.data.imgSrc, 230 * this.data.dpr, 280 * this.data.dpr)
+      },
+      fail: (err) => {
+        console.log(err);
+        this.setData({
+          isLoading: false
+        })
+      },
+    })
   },
   getFrameList() {
     let t = this
@@ -249,6 +263,7 @@ Page({
   },
   // 选择相框
   chooseFrame(e) {
+    let {ctx, dpr} = this.data
     console.log(e.currentTarget.dataset.src);
     wx.getImageInfo({
       src: e.currentTarget.dataset.src,
@@ -258,16 +273,61 @@ Page({
         currentFrameObj: res,
         _left: (this.data.sysInfo.windowWidth - 230) / 2,
       })
-      this.ctx.fillStyle = this.data.currentColor
-      this.drawImage(this.data.currentFrameObj.path, 230, 280)
+      ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
+      // t.drawImage(img, offectX, offectY, width, height);
+      // ctx.fillStyle = this.data.currentColor
+      let f_width = (230 - 40) * dpr;
+      let f_height = (280 - 40) * dpr;
+      let f_offsetX = 20 * dpr;
+      let f_foosetY = 20  * dpr;
+      // currentFrameObj.path
+      this.drawImage(this.data.currentFrameObj.path, 230 * dpr, 280 * dpr, 0, 0,false)
+      this.drawImage(this.data.imgSrc, f_width, f_height, f_offsetX, f_foosetY,false)
     }).catch(() => {
       wx.hideLoading()
     })
   },
-  touchStart(e) {
-    console.log(e);
-    if(this.data.currentFrameObj.path) {
-      this.drawImage(this.data.currentFrameObj.path, 230, 280)
-    }
+  saveImage() {
+    let t = this;
+    this.setData({
+      isLoading: true
+    })
+    wx.canvasToTempFilePath({
+      canvas: this.data.canvasNode,
+    }).then(r => {
+      wx.uploadFile({
+        filePath: r.tempFilePath,
+        name: 'file',
+        url:  `${app.globalData.baseUrl}/wx/photo/uploadFile`,
+        formData: {
+          openId: app.globalData.userInfo.openId,
+        },
+        success: res => {
+          const data = _res.data
+          let {result} = JSON.parse(data)
+          wx.showModal({
+            showCancel:false,
+            content: `请及时保存图片ID为${result.id}联系客服`
+          })
+        },
+        fail: err =>{
+          wx.showModal({
+            showCancel:false,
+            content: "上传失败,请稍候重试"
+          })  
+        },
+        complete: ()=> {
+          t.setData({
+            isLoading:false
+          })
+        }
+      })
+    }).catch(err => {
+      console.log("err",err);
+      wx.showModal({
+        showCancel:false,
+        content: "上传失败,请稍候重试"
+      })
+    })
   }
 });

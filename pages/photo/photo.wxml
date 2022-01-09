@@ -1,26 +1,29 @@
 <view class="container">
-    <canvas id="canvas1" type="2d" disable-scroll="{{ true }}"></canvas>
-    <button type="default" size="{{defaultSize}}" bindtap="choosePhoto" hover-class="other-button-hover"
-        loading="{{isLoading}}" style="width: 280rpx; height: 64rpx; display: inline-block; box-sizing: border-box; left: 0rpx; top: 0rpx"> 选择/拍摄图片
-    </button>
-    <button type="default" wx:if="{{!originImgSrc}}" hover-class="other-button-hover" size="{{defaultSize}}" loading="{{isLoading}}" bindtap="removeBg">去除图片背景</button>
-    <button type="default" wx:if="{{originImgSrc}}" hover-class="other-button-hover" size="{{defaultSize}}" loading="{{isLoading}}" bindtap="setImgBg">恢复图片背景</button>
+    <view class="can-body">
+        <canvas id="canvas1" type="2d" disable-scroll="{{ true }}"></canvas>
+    </view>
+    <view>
+        <button type="default" size="{{defaultSize}}" bindtap="choosePhoto" hover-class="other-button-hover" loading="{{isLoading}}" style="width: 280rpx; height: 64rpx; display: inline-block; box-sizing: border-box; left: 0rpx; top: 0rpx"> 选择/拍摄图片
+        </button>
+        <button type="default" wx:if="{{!originImgSrc}}" hover-class="other-button-hover" size="{{defaultSize}}" loading="{{isLoading}}" bindtap="removeBg">去除图片背景</button>
+        <button type="default" wx:if="{{originImgSrc}}" hover-class="other-button-hover" size="{{defaultSize}}" loading="{{isLoading}}" bindtap="setImgBg">恢复图片背景</button>
+       
+    </view>
+
     <view class="button-sp-area">
-        <button type="default" size="{{defaultSize}}" bindtap="bthClick" data-color="red" class="mini-btn">红</button>
-        <button type="default" size="{{defaultSize}}" bindtap="bthClick" data-color="yellow" class="mini-btn">黄</button>
-        <button type="default" size="{{defaultSize}}" bindtap="bthClick" data-color="blue" class="mini-btn">蓝</button>
-        <button type="default" size="{{defaultSize}}" data-a="0" data-b="-1" class="mini-btn"
-            bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">上</button>
-        <button type="default" size="{{defaultSize}}" data-a="0" data-b="1" class="mini-btn"
-            bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">下</button>
-        <button type="default" size="{{defaultSize}}" data-a="-1" data-b="0" class="mini-btn"
-            bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">左</button>
-        <button type="default" size="{{defaultSize}}" data-a="1" data-b="0" class="mini-btn"
-            bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">右</button>
-        <button type="default" size="{{defaultSize}}" data-a="1" class="mini-btn" bindtouchstart="btnStartChangePhoto"
-            bindtouchend="BtnEndChangePhoto">放大</button>
-        <button type="default" size="{{defaultSize}}" data-a="-1" class="mini-btn" bindtouchstart="btnStartChangePhoto"
-            bindtouchend="BtnEndChangePhoto">缩小</button>
-            <button type="default" bindtap="saveImage"  loading="{{isLoading}}">保存图片</button>
+        <view>
+            <button type="default" size="{{defaultSize}}" bindtap="bthClick" data-color="red" class="mini-btn">红</button>
+            <button type="default" size="{{defaultSize}}" bindtap="bthClick" data-color="yellow" class="mini-btn">黄</button>
+            <button type="default" size="{{defaultSize}}" bindtap="bthClick" data-color="blue" class="mini-btn">蓝</button>
+        </view>
+        <view>
+            <button type="default" size="{{defaultSize}}" data-a="0" data-b="-1" class="mini-btn" bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">上</button>
+            <button type="default" size="{{defaultSize}}" data-a="0" data-b="1" class="mini-btn" bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">下</button>
+            <button type="default" size="{{defaultSize}}" data-a="-1" data-b="0" class="mini-btn" bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">左</button>
+            <button type="default" size="{{defaultSize}}" data-a="1" data-b="0" class="mini-btn" bindtouchstart="btnStartMovePhoto" bindtouchend="btnEndMovePhoto">右</button>
+        </view>
+        <button type="default" size="{{defaultSize}}" data-a="1" class="mini-btn" bindtouchstart="btnStartChangePhoto" bindtouchend="BtnEndChangePhoto">放大</button>
+        <button type="default" size="{{defaultSize}}" data-a="-1" class="mini-btn" bindtouchstart="btnStartChangePhoto" bindtouchend="BtnEndChangePhoto">缩小</button>
+        <button type="default" bindtap="saveImage" loading="{{isLoading}}">保存图片</button>
     </view>
 </view>

@@ -3,6 +3,13 @@
   background-color: blue;
 }
 
+
+#canvas1 {
+  width: 230px;
+  height: 280px;
+  margin: 10px auto;
+}
+
 button {
   margin: 10px;
 }

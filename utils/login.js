@@ -16,14 +16,9 @@ async function getUserInfo(app) {
           ...app.globalData.userInfo,
           ..._res.data.result,
         };
-        wx.setStorage({
-          key: "userInfo",
-          data: app.globalData.userInfo
-        })
         let userInfo = {
           ...app.globalData.userInfo,
         }
-        resolve(_res)
         wx.request({
           url: app.globalData.baseUrl + '/wx/save',
           data: {
@@ -32,7 +27,18 @@ async function getUserInfo(app) {
           method: 'POST',
           success: (_r => {
             console.log("save _r", _r);
-          })
+            wx.setStorage({
+              key: "userInfo",
+              data:{
+                ... app.globalData.userInfo,
+                ..._r.userInfo
+              }
+            })
+            resolve(_res)
+          }),
+          error: (e) => {
+            reject(e)
+          }
         })
       },
       error: (error) => {

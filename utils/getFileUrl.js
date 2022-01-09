@@ -1,3 +1,0 @@
-function base64ToURl() {
-    
-}

@@ -1,8 +1,8 @@
+var WxLogin = require("./login")
 async function getPhoteFrameList(el, app) {
     const userInfo = await wx.getStorage({
         key: "userInfo"
     })
-    console.log(userInfo.data);
     return new Promise((resolve, reject) => {
         wx.request({
             url: `${app.globalData.baseUrl}/wx/photo/getFrameList`,
@@ -17,6 +17,8 @@ async function getPhoteFrameList(el, app) {
                 } = res
                 if (data.rtnCode === "-9999") {
                     reject(res)
+                    app.globalData.hasUserInfo = false
+                    WxLogin.getUserInfo(app)
                 } else {
                     resolve(res)
                 }

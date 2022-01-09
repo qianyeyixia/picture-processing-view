@@ -2,36 +2,37 @@
 <view>
     <view class="container">
         <view class="header">
-            <canvas bindtouchstart="touchStart" id="testCanvas" 
-            disable-scroll="true"
-            class="upload_img" type="2d" style="left: {{_left}}px;"></canvas>
-            <!-- <view wx:if="{{!imgSrc}}"  class="upload_img"  bindtap="chooseImage">
-                上传图片
-            </view> -->
+            <canvas bindtouchstart="touchStart" id="testCanvas" disable-scroll="true" class="upload_img" type="2d" style="left: {{_left}}px;"></canvas>
         </view>
-        <view class="">
-            <button class="cu-btn" bindtap="chooseImage" style="width: 302rpx; height: 64rpx; display: inline-flex; box-sizing: border-box; left: 0rpx; top: 0rpx">选择/拍摄图片</button>
-            <button class="cu-btn" bindtap="getOriginImage" data-color="origin" style="position: relative; left: 30rpx; top: 0rpx">还原图片背景</button>
+        <view class="body">
             <view>
-                <view style="width: 750rpx; height: 64rpx; display: block; box-sizing: border-box; left: NaNrpx; top: NaNrpx; font-size: x-large">
-                    改变图片背景颜色
+                <button type="default" size="mini"  bindtap="chooseImage">选择/拍摄图片</button>
+                <button loading="{{isLoading}}" wx:if="{{!currentImageBgBool}}" type="default" size="mini"  bindtap="removeImageBg" data-color="remove">去除图片背景</button>
+                <button loading="{{isLoading}}" wx:if="{{currentImageBgBool}}" type="default" size="mini"  bindtap="getOriginImage" data-color="origin" >还原图片背景</button>
+                <button type="default" bindtap="saveImage" loading="{{isLoading}}">保存图片</button>
+                <!-- <button type="default" wx:if="{{currentFrameObj.path}}" hover-class="other-button-hover" size="{{defaultSize}}" loading="{{isLoading}}">清除相框</button>
+                <button type="default" wx:if="{{currentFrameObj.path}}" hover-class="other-button-hover" size="{{defaultSize}}" loading="{{isLoading}}">恢复相框</button> -->
+            </view>
+            <view class="action-title">
+                改变图片背景颜色
+            </view>
+            <text class="action-title-tips">tips:只有去掉图片背景之后才能变更图片背景颜色</text>
+            <view class="">
+                <button type="default" disabled="{{!currentImageBgBool}}" size="mini" bindtap="changeColor" size="mini" data-color="black">黑色</button>
+                <button type="default" disabled="{{!currentImageBgBool}}" size="mini" bindtap="changeColor" data-color="red">红色</button>
+                <button type="default" disabled="{{!currentImageBgBool}}" size="mini" bindtap="changeColor" data-color="blue">蓝色</button>
+            </view>
+        </view>
+        <view>
+            <view class="action-title">
+                图片相框 <text bindtap="toggleFrame">{{ showFrameSrcs ? "收起相框" : "展示相框"}}</text>
+            </view>
+            <scroll-view scroll-x="true" class="swiper-content" wx:if="{{showFrameSrcs}}">
+                <view class="frameBox" data-src="{{frame_path+item.picturePath}}" wx:for="{{frameSrcs}}" wx:key="id" bindtap="chooseFrame">
+                    <image class="frameBox-image" mode="aspectFit" src="{{frame_path+item.picturePath}}"></image>
+                    <!-- <text class="frameBox-text">{{item.title}}</text> -->
                 </view>
-                <button type="default" size="mini" bindtap="changeColor" size="mini"  data-color="black">黑色</button>
-                <button type="default" size="mini"  bindtap="changeColor" data-color="red">红色</button>
-                <button type="default" size="mini"  bindtap="changeColor" data-color="blue">蓝色</button>
-            </view>
+            </scroll-view>
         </view>
-        <view>
-        <view>
-            图片相框 <text bindtap="toggleFrame">{{ showFrameSrcs ? "收起相框" : "展示相框"}}</text>
-        </view>
-        <scroll-view scroll-x="true" class="swiper-content" wx:if="{{showFrameSrcs}}">
-            <view class="frameBox" data-src="{{frame_path+item.picturePath}}" wx:for="{{frameSrcs}}" wx:key="id" bindtap="chooseFrame">
-                <image class="frameBox-image" mode="aspectFit" src="{{frame_path+item.picturePath}}"></image>
-                <!-- <text class="frameBox-text">{{item.title}}</text> -->
-            </view>
-        </scroll-view>
     </view>
-    </view>
-
 </view>
