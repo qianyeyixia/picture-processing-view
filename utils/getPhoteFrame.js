@@ -4,6 +4,7 @@ async function getPhoteFrameList(el, app) {
     return new Promise((resolve, reject) => {
         if(!app.globalData.hasUserInfo) {
             WxLogin.getUserInfo(app).then(r => {
+                wx.setStorageSync('userInfo', r.result)
                 wx.request({
                     url: `${app.globalData.baseUrl}/wx/photo/getFrameList`,
                     method: "GET",
