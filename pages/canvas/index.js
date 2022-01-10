@@ -29,8 +29,15 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function () {
-    this.getFrameList()
+  // onLoad: function () {
+  //   if(!this.data.frameSrcs.length) {
+  //     this.getFrameList()
+  //   } 
+  // },
+  onShow() {
+    if(!this.data.frameSrcs.length) {
+      this.getFrameList()
+    } 
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -245,6 +252,7 @@ Page({
   getFrameList() {
     let t = this
     getPhoteFrameList(this, app).then(res => {
+      console.log("this.getFrameList");
       const {
         data
       } = res;
@@ -252,8 +260,6 @@ Page({
         frame_path: data.result,
         frameSrcs: data.resultList,
       });
-    }).catch(err => {
-      console.log(err)
     })
   },
   toggleFrame() {
