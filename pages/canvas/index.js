@@ -154,12 +154,12 @@ Page({
       })
     }
   },
+  // 改变颜色
   changeColor(e) {
-    let {ctx, dpr, frame_path, imgSrc, currentFrameObj} = this.data
+    let {ctx,canvasNode, dpr, frame_path, imgSrc, currentFrameObj} = this.data
     const currentMap = imgageMapList.get(currentFrameObj.id)
-    console.log("changeColor", imgSrc, currentFrameObj, 177);
+    console.log("changeColor", imgSrc, currentFrameObj, 177, imgageMapList, ctx);
     const color = e.target.dataset.color
-    console.log(color, 179);
     if (!this.data.imgSrc) {
       wx.showModal({
         content: "没有上传图片,不能改变背景颜色",
@@ -170,23 +170,36 @@ Page({
     this.setData({
       currentColor: color
     })
-    ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
-    ctx.setFillStyle = color
-    this.drawImage(this.data.imgSrc, 230 * dpr　, 280 * dpr, 0, 0 ,false)
-
+   
+    if(currentFrameObj?.path) {
+      ctx.fillStyle = color
+      ctx.fillRect(20 * dpr, 20 * dpr,  (230- 40)  * dpr, (280- 40) * dpr)
+      // ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
+      this.drawImage(currentFrameObj.path, 230 * dpr　, 280 * dpr, 0, 0 ,false)
+      // ctx.fillStyle = color
+      // ctx.StrokeStyle ='red'
+      // ctx.strokeRect(20 * dpr, 20 * dpr, 230 * dpr, 280 * dpr)   
+      setTimeout(() => {
+        this.drawImage(this.data.imgSrc, (230- 40) *dpr　, (280- 40) * dpr, 20*dpr, 20*dpr ,false)
+      }, 150)
+    } else {
+      ctx.fillStyle = color
+      ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
+      this.drawImage(this.data.imgSrc, 230 * dpr　, 280 * dpr, 0, 0 ,false)
+    }
   },
   // 还原图片背景
   getOriginImage(e) {
-    let {ctx, dpr, imgSrc, originImgObj, currentFrameObj} = this.data
+    let {ctx, dpr, imgSrc, originImgObj, currentFrameObj, currentColor} = this.data
     const color = e.target.dataset.color
     const removeMap = imgageMapList.get("remove")
-    console.log("originImgObj", 183, originImgObj, currentFrameObj, imgageMapList);
+    const cMap = imgageMapList.get(currentFrameObj.id)
+    console.log("getOriginImage", 183, originImgObj, currentFrameObj, imgageMapList, removeMap, cMap);
     this.setData({
       imgSrc: originImgObj.img.path
     })
-    console.log(this.data.originImgObj, this.data.imgSrc, 192, "getOriginImage", color);
+    ctx.setFillStyle = currentColor
     ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
-    ctx.setFillStyle = "white"
     if (!imgSrc) {
       wx.showModal({
         content: "没有上传图片,还原图片背景",
@@ -194,28 +207,28 @@ Page({
       })
       return false
     } else {
-      if(removeMap.frame && currentFrameObj.id) {
-        this.drawImage(originImgObj.img.path, 
-          removeMap.img.width,
-          removeMap.img.height,
-          removeMap.img.offsetX, 
-          removeMap.img.offsetY, 
-          true)
+      if(cMap.frame && currentFrameObj.id) {
+        this.drawImage(currentFrameObj.path, 
+          cMap.frame.width * dpr,
+          cMap.frame.height * dpr,
+          0, 
+          0, 
+          false)
           setTimeout(() => {
-            this.drawImage(currentFrameObj.path, 
-              removeMap.frame.width * dpr,
-              removeMap.frame.height * dpr,
-              0, 
-              0, 
-              true)
+            this.drawImage(originImgObj.img.path, 
+              cMap.img.width,
+              cMap.img.height,
+              cMap.img.offsetX, 
+              cMap.img.offsetY, 
+              false)
           }, 200)
           imgageMapList.set(color, {
             img: {
-              ...removeMap.img,
+              ...cMap.img,
               imgSrc: originImgObj.img.path, 
             },
             frame: {
-              ...removeMap.frame,
+              ...cMap.frame,
               path: currentFrameObj.path,
             }
           })
@@ -243,7 +256,7 @@ Page({
     let {currentFrameObj, currentColor, ctx, imgSrc, dpr, originImgObj} = this.data
     const color = e.target.dataset.color;
     const currentMap = imgageMapList.get(currentFrameObj.id)
-    console.log(originImgObj, imgSrc, 192, "removeImageBg", color, currentMap, currentFrameObj,currentColor);
+    console.log(imgageMapList,originImgObj, imgSrc, 192, "removeImageBg", color, currentMap, currentFrameObj,currentColor);
     this.setData({
       isLoading: true
     })
@@ -254,10 +267,19 @@ Page({
       })
     }
     if(originImgObj?.remove?.path) {
+      ctx.fillStyle = currentColor
+      ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
       if(currentMap) {
+        this.drawImage(currentFrameObj.path, 230*dpr, 280*dpr, 0 , 0, false)
+        setTimeout(() => {
+          this.drawImage(originImgObj.remove.path, (230-40) *dpr, (280-40) *dpr, 20*dpr, 20*dpr, false)
+        },200)
+        this.setData({
+          currentImageBgBool:true,
+          isLoading:false,
+          imgSrc:originImgObj.remove.path,
+        })
       } else {
-        ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
-        ctx.fillStyle = currentColor
         this.drawImage(originImgObj.remove.path, 230*dpr, 280*dpr)
         imgageMapList.set(color, {
           img: {
