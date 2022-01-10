@@ -2,11 +2,12 @@
 const app = getApp();
 var getPhoteFrameList = require("../../utils/getPhoteFrame");
 var WXlogin = require("../../utils/login")
+var imgageMapList = new Map([])
+
 Page({
   /**
    * 页面的初始数据
    */
-  imgageMapList: new Map([]),
   data: {
     canvasNode: null,
     ctx: null,
@@ -19,12 +20,13 @@ Page({
     imageList: [],
     currentImgResultObj: {},
     currentImageBgBool: false,
+    originImgObj: {},
     isLoading: false,
     currentColor: "white",
     frameSrcs: [], // 图片相框
     showFrameSrcs: false, // 展示相框
     currentFrameObj: {},
-    frame_path: "http://www.shazhibin.top/frame_path"
+    frame_path: "http://www.shazhibin.top/frame_path",
   },
   /**
    * 生命周期函数--监听页面加载
@@ -69,42 +71,24 @@ Page({
         if (app.globalData.imgSrc) {
           this.setData({
             _left: (this.data.sysInfo.windowWidth - 230) / 2,
-            imgSrc: app.globalData.imgSrc
+            imgSrc: app.globalData.imgSrc,
           })
           wx.getImageInfo({
             src: app.globalData.imgSrc,
           }).then(_r => {
             console.log(76, _r);
-            this.drawImage(this.data.imgSrc, 230 * dpr, 280 * dpr)
+            this.drawImage(this.data.imgSrc, 230 * dpr, 280 * dpr, 0,0 ,true)
           })
         }
       });
   },
   chooseImage: function () {
-    if (!app.globalData.hasUserInfo) {
-      wx.getUserProfile({
-        desc: "重新授权",
-        lang: "zh_CN",
-        success: (res) => {
-          console.log("getUserProfile", res);
-          app.globalData.userInfo = {
-            ...app.globalData.userInfo,
-            ...res.userInfo
-          }
-          WXlogin.getUserInfo(app).then(_r => {
-            wx.navigateTo({
-              url: "../canvas/cropper",
-            });
-          })
-        },
-      });
-      return;
-    }
     wx.navigateTo({
       url: "../canvas/cropper",
     });
   },
   drawImage(imageSrc, width, height, offectX = 0, offectY = 0, reset = true) {
+    console.log(109, imageSrc, width, height, offectX, offectY, reset);
     let {
       canvasNode,
       ctx
@@ -171,8 +155,11 @@ Page({
     }
   },
   changeColor(e) {
-    let {ctx, dpr} = this.data
+    let {ctx, dpr, frame_path, imgSrc, currentFrameObj} = this.data
+    const currentMap = imgageMapList.get(currentFrameObj.id)
+    console.log("changeColor", imgSrc, currentFrameObj, 177);
     const color = e.target.dataset.color
+    console.log(color, 179);
     if (!this.data.imgSrc) {
       wx.showModal({
         content: "没有上传图片,不能改变背景颜色",
@@ -183,30 +170,80 @@ Page({
     this.setData({
       currentColor: color
     })
-    ctx.fillStyle = color
-    this.drawImage(this.data.imgSrc, 230*dpr　, 280* dpr)
+    ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
+    ctx.setFillStyle = color
+    this.drawImage(this.data.imgSrc, 230 * dpr　, 280 * dpr, 0, 0 ,false)
+
   },
+  // 还原图片背景
   getOriginImage(e) {
-    let {ctx, dpr} = this.data
+    let {ctx, dpr, imgSrc, originImgObj, currentFrameObj} = this.data
     const color = e.target.dataset.color
-    let current = this.imgageMapList.get(color)
-    console.log(!current);
-    let _width = current?.width || 230,
-      _height = current?.height || 280;
-    ctx.fillRect(0, 0, _width * dpr, _height * dpr)
+    const removeMap = imgageMapList.get("remove")
+    console.log("originImgObj", 183, originImgObj, currentFrameObj, imgageMapList);
+    this.setData({
+      imgSrc: originImgObj.img.path
+    })
+    console.log(this.data.originImgObj, this.data.imgSrc, 192, "getOriginImage", color);
+    ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
     ctx.setFillStyle = "white"
-    if (!current) {
+    if (!imgSrc) {
       wx.showModal({
         content: "没有上传图片,还原图片背景",
         showCancel: false,
       })
       return false
     } else {
-      this.drawImage(current?.imgSrc, _width * dpr, _height  * dpr)
+      if(removeMap.frame && currentFrameObj.id) {
+        this.drawImage(originImgObj.img.path, 
+          removeMap.img.width,
+          removeMap.img.height,
+          removeMap.img.offsetX, 
+          removeMap.img.offsetY, 
+          true)
+          setTimeout(() => {
+            this.drawImage(currentFrameObj.path, 
+              removeMap.frame.width * dpr,
+              removeMap.frame.height * dpr,
+              0, 
+              0, 
+              true)
+          }, 200)
+          imgageMapList.set(color, {
+            img: {
+              ...removeMap.img,
+              imgSrc: originImgObj.img.path, 
+            },
+            frame: {
+              ...removeMap.frame,
+              path: currentFrameObj.path,
+            }
+          })
+      } else {
+        this.drawImage(originImgObj.img.path, 
+         230 * dpr,
+         280 * dpr,
+          0, 
+          0, 
+          true)
+          imgageMapList.set(color, {
+            img:{
+              ...removeMap.img,
+              imgSrc:originImgObj.img.path, 
+            }
+          })
+      }
+      this.setData({
+        currentImageBgBool:false
+      })
     }
   },
+  // 清除图片背景
   removeImageBg(e) {
+    let {currentFrameObj, currentColor, ctx, imgSrc, dpr, originImgObj} = this.data
     const color = e.target.dataset.color;
+    const currentMap = imgageMapList.get(currentFrameObj.id)
+    console.log(originImgObj, imgSrc, 192, "removeImageBg", color, currentMap, currentFrameObj,currentColor);
     this.setData({
       isLoading: true
     })
@@ -216,39 +253,91 @@ Page({
         showCancel: false,
       })
     }
-    wx.uploadFile({
-      filePath: this.data.imgSrc,
-      name: 'file',
-      url: `${app.globalData.baseUrl}/wx/photo/getForeground`,
-      formData: {
-        openId: app.globalData.userInfo.openId,
-      },
-      success: (res) => {
-        let _data = JSON.parse(res.data);
-        this.imgageMapList.set("origin", {
-          imgSrc: this.data.imgSrc,
-          width: 230,
-          height: 280
-        })
-        this.imgageMapList.set(color, {
-          imgSrc: _data.result.picturePath,
-          width: 230,
-          height: 280
+    if(originImgObj?.remove?.path) {
+      if(currentMap) {
+      } else {
+        ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
+        ctx.fillStyle = currentColor
+        this.drawImage(originImgObj.remove.path, 230*dpr, 280*dpr)
+        imgageMapList.set(color, {
+          img: {
+            imgSrc: originImgObj.remove.path,
+            width: 230,
+            height: 280,
+          }
         })
         this.setData({
-          imgSrc: _data.result.picturePath,
-          currentImageBgBool:true
+          currentImageBgBool:true,
+          isLoading:false,
+          imgSrc:originImgObj.remove.path,
         })
-        this.drawImage(this.data.imgSrc, 230 * this.data.dpr, 280 * this.data.dpr)
-      },
-      fail: (err) => {
-        console.log(err);
-        this.setData({
-          isLoading: false
-        })
-      },
-    })
+      }
+    } else {
+      wx.uploadFile({
+        filePath: this.data.imgSrc,
+        name: 'file',
+        url: `${app.globalData.baseUrl}/wx/photo/getForeground`,
+        formData: {
+          openId: app.globalData.userInfo.openId,
+        },
+        success: (res) => {
+          let _data = JSON.parse(res.data);
+          ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
+          ctx.fillStyle = currentColor
+          if(currentMap) {
+            this.drawImage(currentMap.frame.path, 
+              currentMap.frame.width * dpr, currentMap.frame.height * dpr,0, 0, false)
+            setTimeout(() => {
+              this.drawImage(_data.result.picturePath, 
+                currentMap.img.width, 
+                currentMap.img.height, 
+                currentMap.img.offsetX, 
+                currentMap.img.offsetY, 
+                false)
+            },200)
+            imgageMapList.set(color, {
+              img: {
+                ...currentMap.img,
+                imgSrc: _data.result.picturePath
+              },
+              frame: currentMap.frame
+            })
+            imgageMapList.set("origin", currentMap)
+          } else {
+            this.drawImage( _data.result.picturePath, 230 * dpr, 280 * dpr, 0,0,true)
+            imgageMapList.set(color, {
+              img: {
+                imgSrc: _data.result.picturePath,
+                width: 230,
+                height: 280,
+              }
+            })
+          }
+          this.setData({
+            originImgObj:{
+              img: {
+                path: imgSrc
+              },
+              remove: {
+                path: _data.result.picturePath
+              }
+            },
+            imgSrc:_data.result.picturePath,
+            currentImageBgBool:true,
+            isLoading:false
+          })
+          console.log("imgageMapList", imgageMapList);
+        },
+        fail: (err) => {
+          console.log(err);
+          this.setData({
+            isLoading: false
+          })
+        },
+      })
+    }
   },
+  // 获取相框
   getFrameList() {
     let t = this
     getPhoteFrameList(this, app).then(res => {
@@ -269,26 +358,47 @@ Page({
   },
   // 选择相框
   chooseFrame(e) {
-    let {ctx, dpr} = this.data
-    console.log(e.currentTarget.dataset.src);
+    let {ctx, dpr, currentColor, currentImageBgBool, imgSrc, currentFrameObj} = this.data
+    const currentFrameItem = e.currentTarget.dataset.item
+    console.log(e.currentTarget.dataset.src, currentColor, dpr, 285, e);
     wx.getImageInfo({
       src: e.currentTarget.dataset.src,
     }).then(res => {
-      console.log(res);
+      console.log(res, 289, currentImageBgBool, imgSrc, currentFrameObj);
       this.setData({
-        currentFrameObj: res,
+        currentFrameObj: {
+          ...res,
+          ...currentFrameItem
+        },
         _left: (this.data.sysInfo.windowWidth - 230) / 2,
       })
       ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
-      // t.drawImage(img, offectX, offectY, width, height);
-      // ctx.fillStyle = this.data.currentColor
+      ctx.fillStyle = currentColor
       let f_width = (230 - 40) * dpr;
       let f_height = (280 - 40) * dpr;
       let f_offsetX = 20 * dpr;
       let f_foosetY = 20  * dpr;
-      // currentFrameObj.path
-      this.drawImage(this.data.currentFrameObj.path, 230 * dpr, 280 * dpr, 0, 0,false)
-      this.drawImage(this.data.imgSrc, f_width, f_height, f_offsetX, f_foosetY,false)
+      this.drawImage(res.path, 230 * dpr, 280 * dpr, 0, 0,false)
+      setTimeout(() => {
+        if(imgSrc) {
+          this.drawImage(imgSrc, f_width, f_height, f_offsetX, f_foosetY,false)
+        }
+      }, 400)
+      imgageMapList.set(currentFrameItem.id, {
+        img: {
+          imgSrc,
+          width: f_width,
+          height: f_height,
+          offsetX:f_offsetX,
+          offsetY:f_foosetY
+        },
+        frame: {
+          path: res.path,
+          width: 230,
+          height: 289
+        }
+      })
+      console.log(imgageMapList);
     }).catch(() => {
       wx.hideLoading()
     })

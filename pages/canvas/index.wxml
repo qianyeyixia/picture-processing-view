@@ -28,7 +28,7 @@
                 图片相框 <text bindtap="toggleFrame">{{ showFrameSrcs ? "收起相框" : "展示相框"}}</text>
             </view>
             <scroll-view scroll-x="true" class="swiper-content" wx:if="{{showFrameSrcs}}">
-                <view class="frameBox" data-src="{{frame_path+item.picturePath}}" wx:for="{{frameSrcs}}" wx:key="id" bindtap="chooseFrame">
+                <view class="frameBox" data-src="{{frame_path+item.picturePath}}" data-item="{{item}}" wx:for="{{frameSrcs}}" wx:key="id" bindtap="chooseFrame">
                     <image class="frameBox-image" mode="aspectFit" src="{{frame_path+item.picturePath}}"></image>
                     <!-- <text class="frameBox-text">{{item.title}}</text> -->
                 </view>
