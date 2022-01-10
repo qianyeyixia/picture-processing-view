@@ -1,9 +1,6 @@
 async function getUserInfo(app) {
-  const res = await wx.login({
-    timeout: 5000,
-  });
+  const res = await wx.login();
   console.log("wx.login", res);
-
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${app.globalData.baseUrl}/wx/login`,
