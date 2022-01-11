@@ -176,7 +176,7 @@ Page({
    
     if(currentFrameObj?.path) {
       ctx.fillStyle = color
-      ctx.fillRect(20 * dpr, 20 * dpr,  (230- 40)  * dpr, (280- 40) * dpr)
+      ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
       this.drawImage(this.data.imgSrc, (230- 40) *dpr　, (280- 40) * dpr, 20*dpr, 20*dpr ,false)
       setTimeout(() => {
         this.drawImage(currentFrameObj.path, 230 * dpr　, 280 * dpr, 0, 0 ,false)
@@ -304,7 +304,6 @@ Page({
         },
         success: (res) => {
           let _data = JSON.parse(res.data);
-
           wx.getImageInfo({
             src: _data.result.picturePath,
           }).then(imgRemoveBgRes => {
@@ -324,7 +323,7 @@ Page({
               imgageMapList.set(color, {
                 img: {
                   ...currentMap.img,
-                  imgSrc: _data.result.picturePath
+                  imgSrc: imgRemoveBgRes.path
                 },
                 frame: currentMap.frame
               })
@@ -348,7 +347,7 @@ Page({
                   path: imgRemoveBgRes.path
                 }
               },
-              imgSrc:_data.result.picturePath,
+              imgSrc:imgRemoveBgRes.path,
               currentImageBgBool:true,
               isLoading:false
             })
