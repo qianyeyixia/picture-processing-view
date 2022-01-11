@@ -82,11 +82,13 @@ Page({
         }
       });
   },
+  // 上传图片
   chooseImage: function () {
     wx.navigateTo({
       url: "../canvas/cropper",
     });
   },
+  // 绘制图片到 canvas
   drawImage(imageSrc, width, height, offectX = 0, offectY = 0, reset = true) {
     console.log(109, imageSrc, width, height, offectX, offectY, reset);
     let {
@@ -147,6 +149,7 @@ Page({
       })
     }
   },
+  // 判断 imgSrc 是否存在 
   isSrcEmpty() {
     if (!this.data.imgSrc) {
       wx.showToast({
@@ -174,13 +177,9 @@ Page({
     if(currentFrameObj?.path) {
       ctx.fillStyle = color
       ctx.fillRect(20 * dpr, 20 * dpr,  (230- 40)  * dpr, (280- 40) * dpr)
-      // ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
-      this.drawImage(currentFrameObj.path, 230 * dpr　, 280 * dpr, 0, 0 ,false)
-      // ctx.fillStyle = color
-      // ctx.StrokeStyle ='red'
-      // ctx.strokeRect(20 * dpr, 20 * dpr, 230 * dpr, 280 * dpr)   
+      this.drawImage(this.data.imgSrc, (230- 40) *dpr　, (280- 40) * dpr, 20*dpr, 20*dpr ,false)
       setTimeout(() => {
-        this.drawImage(this.data.imgSrc, (230- 40) *dpr　, (280- 40) * dpr, 20*dpr, 20*dpr ,false)
+        this.drawImage(currentFrameObj.path, 230 * dpr　, 280 * dpr, 0, 0 ,false)
       }, 150)
     } else {
       ctx.fillStyle = color
@@ -208,20 +207,21 @@ Page({
       return false
     } else {
       if(cMap.frame && currentFrameObj.id) {
-        this.drawImage(currentFrameObj.path, 
-          cMap.frame.width * dpr,
-          cMap.frame.height * dpr,
-          0, 
-          0, 
+        this.drawImage(originImgObj.img.path, 
+          cMap.img.width,
+          cMap.img.height,
+          cMap.img.offsetX, 
+          cMap.img.offsetY, 
           false)
+        
           setTimeout(() => {
-            this.drawImage(originImgObj.img.path, 
-              cMap.img.width,
-              cMap.img.height,
-              cMap.img.offsetX, 
-              cMap.img.offsetY, 
+            this.drawImage(currentFrameObj.path, 
+              cMap.frame.width * dpr,
+              cMap.frame.height * dpr,
+              0, 
+              0, 
               false)
-          }, 200)
+          }, 120)
           imgageMapList.set(color, {
             img: {
               ...cMap.img,
@@ -270,10 +270,10 @@ Page({
       ctx.fillStyle = currentColor
       ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
       if(currentMap) {
-        this.drawImage(currentFrameObj.path, 230*dpr, 280*dpr, 0 , 0, false)
+        this.drawImage(originImgObj.remove.path, (230-40) *dpr, (280-40) *dpr, 20*dpr, 20*dpr, false)
         setTimeout(() => {
-          this.drawImage(originImgObj.remove.path, (230-40) *dpr, (280-40) *dpr, 20*dpr, 20*dpr, false)
-        },200)
+          this.drawImage(currentFrameObj.path, 230*dpr, 280*dpr, 0 , 0, false)
+        },120)
         this.setData({
           currentImageBgBool:true,
           isLoading:false,
@@ -307,15 +307,15 @@ Page({
           ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
           ctx.fillStyle = currentColor
           if(currentMap) {
-            this.drawImage(currentMap.frame.path, 
-              currentMap.frame.width * dpr, currentMap.frame.height * dpr,0, 0, false)
+            this.drawImage(_data.result.picturePath, 
+              currentMap.img.width, 
+              currentMap.img.height, 
+              currentMap.img.offsetX, 
+              currentMap.img.offsetY, 
+              false)
             setTimeout(() => {
-              this.drawImage(_data.result.picturePath, 
-                currentMap.img.width, 
-                currentMap.img.height, 
-                currentMap.img.offsetX, 
-                currentMap.img.offsetY, 
-                false)
+                this.drawImage(currentMap.frame.path, 
+                  currentMap.frame.width * dpr, currentMap.frame.height * dpr,0, 0, false)
             },200)
             imgageMapList.set(color, {
               img: {
@@ -400,12 +400,12 @@ Page({
       let f_height = (280 - 40) * dpr;
       let f_offsetX = 20 * dpr;
       let f_foosetY = 20  * dpr;
-      this.drawImage(res.path, 230 * dpr, 280 * dpr, 0, 0,false)
+      this.drawImage(imgSrc, f_width, f_height, f_offsetX, f_foosetY,false)
       setTimeout(() => {
         if(imgSrc) {
-          this.drawImage(imgSrc, f_width, f_height, f_offsetX, f_foosetY,false)
+          this.drawImage(res.path, 230 * dpr, 280 * dpr, 0, 0,false)
         }
-      }, 400)
+      }, 120)
       imgageMapList.set(currentFrameItem.id, {
         img: {
           imgSrc,
