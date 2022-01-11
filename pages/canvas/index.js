@@ -91,8 +91,8 @@ Page({
       isLoading:true
     })
     let img = canvasNode.createImage();
-    img.width = width;
-    img.height = height;
+    // img.width = width;
+    // img.height = height;
     img.src = imageSrc;
     img.onload = function () {
       console.log("img onload");

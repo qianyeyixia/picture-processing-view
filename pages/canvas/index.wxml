@@ -2,7 +2,7 @@
 <view>
     <view class="container">
         <view class="header">
-            <canvas bindtouchstart="touchStart" id="testCanvas" disable-scroll="true" class="upload_img" type="2d" style="left: {{_left}}px;"></canvas>
+            <canvas  id="testCanvas" disable-scroll="true" class="upload_img" type="2d" style="left: {{_left}}px;"></canvas>
         </view>
         <view class="body">
             <view>
