@@ -120,35 +120,6 @@ Page({
       })
     }
   },
-  drawImage2(imageSrc, width, height, offectX = 0, offectY = 0, dx = 0, dy = 0, dWidth, dHeight) {
-    let {
-      canvasNode,
-      ctx
-    } = this.data
-    let t = this
-    t.setData({
-      isLoading:true
-    })
-    let img = canvasNode.createImage();
-    img.width = width;
-    img.height = height;
-    img.src = imageSrc;
-    dWidth = dWidth ? dWidth : width
-    dHeight = dHeight ? dHeight : height
-    img.onload = function () {
-      console.log("img onload");
-      ctx.drawImage(img, offectX, offectY, width, height, dx, dy, dWidth, dHeight);
-      t.setData({
-        isLoading:false
-      })
-    };
-    img.onerror = (r) => {
-      console.log("err", r);
-      t.setData({
-        isLoading:false
-      })
-    }
-  },
   // 判断 imgSrc 是否存在 
   isSrcEmpty() {
     if (!this.data.imgSrc) {
@@ -173,7 +144,6 @@ Page({
     this.setData({
       currentColor: color
     })
-   
     if(currentFrameObj?.path) {
       ctx.fillStyle = color
       ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
@@ -197,7 +167,7 @@ Page({
     this.setData({
       imgSrc: originImgObj.img.path
     })
-    ctx.setFillStyle = currentColor
+    ctx.fillStyle = "white"
     ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
     if (!imgSrc) {
       wx.showModal({
@@ -213,7 +183,6 @@ Page({
           cMap.img.offsetX, 
           cMap.img.offsetY, 
           false)
-        
           setTimeout(() => {
             this.drawImage(currentFrameObj.path, 
               cMap.frame.width * dpr,
