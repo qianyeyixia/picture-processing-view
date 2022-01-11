@@ -7,8 +7,8 @@ Page({
 	 */
 	data: {
 		imgSrc: "",
-		width: 250, //宽度
-		height: 250, //高度
+		width: 230, //宽度
+		height: 280, //高度
 		max_width: 300,
 		max_height: 300,
 		disable_rotate: false, //是否禁用旋转

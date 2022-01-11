@@ -28,14 +28,6 @@ Page({
     currentFrameObj: {},
     frame_path: "http://www.shazhibin.top/frame_path",
   },
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  // onLoad: function () {
-  //   if(!this.data.frameSrcs.length) {
-  //     this.getFrameList()
-  //   } 
-  // },
   onShow() {
     if(!this.data.frameSrcs.length) {
       this.getFrameList()
@@ -45,7 +37,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady(c) {
-    console.log("c", 45, c, app.globalData);
     this.setData({
       sysInfo: app.globalData.myDevice
     })
@@ -130,8 +121,7 @@ Page({
   },
   // 改变颜色
   changeColor(e) {
-    let {ctx,canvasNode, dpr, frame_path, imgSrc, currentFrameObj} = this.data
-    const currentMap = imgageMapList.get(currentFrameObj.id)
+    let {ctx,dpr, imgSrc, currentFrameObj} = this.data
     console.log("changeColor", imgSrc, currentFrameObj, 177, imgageMapList, ctx);
     const color = e.target.dataset.color
     if (!this.data.imgSrc) {
@@ -147,7 +137,7 @@ Page({
     if(currentFrameObj?.path) {
       ctx.fillStyle = color
       ctx.fillRect(0, 0, 230 * dpr, 280 * dpr)
-      this.drawImage(this.data.imgSrc, (230- 40) *dpr　, (280- 40) * dpr, 20*dpr, 20*dpr ,false)
+      this.drawImage(this.data.imgSrc, 230 * dpr,280 * dpr, 0, 0 ,false)
       setTimeout(() => {
         this.drawImage(currentFrameObj.path, 230 * dpr　, 280 * dpr, 0, 0 ,false)
       }, 150)
@@ -176,12 +166,12 @@ Page({
       })
       return false
     } else {
-      if(cMap.frame && currentFrameObj.id) {
+      if(cMap?.frame && currentFrameObj.id) {
         this.drawImage(originImgObj.img.path, 
-          cMap.img.width,
-          cMap.img.height,
-          cMap.img.offsetX, 
-          cMap.img.offsetY, 
+          230* dpr,
+          280*dpr,
+          0, 
+          0, 
           false)
           setTimeout(() => {
             this.drawImage(currentFrameObj.path, 
@@ -225,7 +215,7 @@ Page({
     let {currentFrameObj, currentColor, ctx, imgSrc, dpr, originImgObj} = this.data
     const color = e.target.dataset.color;
     const currentMap = imgageMapList.get(currentFrameObj.id)
-    console.log(imgageMapList,originImgObj, imgSrc, 192, "removeImageBg", color, currentMap, currentFrameObj,currentColor);
+    console.log(218,imgageMapList,originImgObj, imgSrc, 192, "removeImageBg", color, currentMap, currentFrameObj,currentColor);
     this.setData({
       isLoading: true
     })
@@ -239,7 +229,7 @@ Page({
       ctx.fillStyle = currentColor
       ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
       if(currentMap) {
-        this.drawImage(originImgObj.remove.path, (230-40) *dpr, (280-40) *dpr, 20*dpr, 20*dpr, false)
+        this.drawImage(originImgObj.remove.path, 230 *dpr, 280 *dpr, 0, 0, false)
         setTimeout(() => {
           this.drawImage(currentFrameObj.path, 230*dpr, 280*dpr, 0 , 0, false)
         },120)
@@ -247,6 +237,17 @@ Page({
           currentImageBgBool:true,
           isLoading:false,
           imgSrc:originImgObj.remove.path,
+          currentFrameObj: {
+            ...currentFrameObj
+          }
+        })
+        imgageMapList.set(color, {
+          img:{
+            imgSrc: originImgObj.remove.path,
+          },
+          frame: {
+            path: currentFrameObj.path
+          }
         })
       } else {
         this.drawImage(originImgObj.remove.path, 230*dpr, 280*dpr)
@@ -280,10 +281,10 @@ Page({
             ctx.fillStyle = currentColor
             if(currentMap) {
               this.drawImage(imgRemoveBgRes.path, 
-                currentMap.img.width, 
-                currentMap.img.height, 
-                currentMap.img.offsetX, 
-                currentMap.img.offsetY, 
+                230* dpr, 
+                280*dpr, 
+                0, 
+                0, 
                 false)
               setTimeout(() => {
                   this.drawImage(currentMap.frame.path, 
@@ -370,11 +371,9 @@ Page({
       })
       ctx.fillStyle = currentColor
       ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
-      let f_width = (230 -40) * dpr;
-      let f_height = (280 -40)* dpr;
-      let f_offsetX = 20 * dpr;
-      let f_foosetY = 20 * dpr;
-      this.drawImage(imgSrc, f_width, f_height, f_offsetX, f_foosetY,false)
+      let f_width = 230 * dpr;
+      let f_height = 280* dpr;
+      this.drawImage(imgSrc, f_width, f_height, 0, 0,false)
       setTimeout(() => {
         if(imgSrc) {
           this.drawImage(res.path, 230 * dpr, 280 * dpr, 0, 0,false)
@@ -385,8 +384,8 @@ Page({
           imgSrc,
           width: f_width,
           height: f_height,
-          offsetX:f_offsetX,
-          offsetY:f_foosetY
+          offsetX:0,
+          offsetY:0
         },
         frame: {
           path: res.path,
