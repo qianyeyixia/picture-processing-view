@@ -304,51 +304,57 @@ Page({
         },
         success: (res) => {
           let _data = JSON.parse(res.data);
-          ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
-          ctx.fillStyle = currentColor
-          if(currentMap) {
-            this.drawImage(_data.result.picturePath, 
-              currentMap.img.width, 
-              currentMap.img.height, 
-              currentMap.img.offsetX, 
-              currentMap.img.offsetY, 
-              false)
-            setTimeout(() => {
-                this.drawImage(currentMap.frame.path, 
-                  currentMap.frame.width * dpr, currentMap.frame.height * dpr,0, 0, false)
-            },200)
-            imgageMapList.set(color, {
-              img: {
-                ...currentMap.img,
-                imgSrc: _data.result.picturePath
+
+          wx.getImageInfo({
+            src: _data.result.picturePath,
+          }).then(imgRemoveBgRes => {
+            ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
+            ctx.fillStyle = currentColor
+            if(currentMap) {
+              this.drawImage(imgRemoveBgRes.path, 
+                currentMap.img.width, 
+                currentMap.img.height, 
+                currentMap.img.offsetX, 
+                currentMap.img.offsetY, 
+                false)
+              setTimeout(() => {
+                  this.drawImage(currentMap.frame.path, 
+                    currentMap.frame.width * dpr, currentMap.frame.height * dpr,0, 0, false)
+              },200)
+              imgageMapList.set(color, {
+                img: {
+                  ...currentMap.img,
+                  imgSrc: _data.result.picturePath
+                },
+                frame: currentMap.frame
+              })
+              imgageMapList.set("origin", currentMap)
+            } else {
+              this.drawImage(imgRemoveBgRes.path, 230 * dpr, 280 * dpr, 0,0,true)
+              imgageMapList.set(color, {
+                img: {
+                  imgSrc:imgRemoveBgRes.path,
+                  width: 230,
+                  height: 280,
+                }
+              })
+            }
+            this.setData({
+              originImgObj:{
+                img: {
+                  path: imgSrc
+                },
+                remove: {
+                  path: imgRemoveBgRes.path
+                }
               },
-              frame: currentMap.frame
+              imgSrc:_data.result.picturePath,
+              currentImageBgBool:true,
+              isLoading:false
             })
-            imgageMapList.set("origin", currentMap)
-          } else {
-            this.drawImage( _data.result.picturePath, 230 * dpr, 280 * dpr, 0,0,true)
-            imgageMapList.set(color, {
-              img: {
-                imgSrc: _data.result.picturePath,
-                width: 230,
-                height: 280,
-              }
-            })
-          }
-          this.setData({
-            originImgObj:{
-              img: {
-                path: imgSrc
-              },
-              remove: {
-                path: _data.result.picturePath
-              }
-            },
-            imgSrc:_data.result.picturePath,
-            currentImageBgBool:true,
-            isLoading:false
+            console.log("imgageMapList", imgageMapList);
           })
-          console.log("imgageMapList", imgageMapList);
+      
         },
         fail: (err) => {
           console.log(err);
@@ -394,12 +400,12 @@ Page({
         },
         _left: (this.data.sysInfo.windowWidth - 230) / 2,
       })
-      ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
       ctx.fillStyle = currentColor
-      let f_width = (230 - 40) * dpr;
-      let f_height = (280 - 40) * dpr;
+      ctx.fillRect(0, 0, 230 * dpr, 280* dpr)
+      let f_width = (230 -40) * dpr;
+      let f_height = (280 -40)* dpr;
       let f_offsetX = 20 * dpr;
-      let f_foosetY = 20  * dpr;
+      let f_foosetY = 20 * dpr;
       this.drawImage(imgSrc, f_width, f_height, f_offsetX, f_foosetY,false)
       setTimeout(() => {
         if(imgSrc) {
